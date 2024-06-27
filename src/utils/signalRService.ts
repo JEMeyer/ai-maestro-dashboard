@@ -15,17 +15,22 @@ const connection = new signalR.HubConnectionBuilder()
   .configureLogging(signalR.LogLevel.Information)
   .build();
 
-// Ensure connection is fully established before invoking methods
+let connectionPromise: Promise<void> | null = null;
+
 async function startConnection() {
-  if (connection.state === signalR.HubConnectionState.Disconnected) {
-    try {
-      await connection.start();
-      console.log("SignalR connection established");
-    } catch (err) {
-      console.error("Error establishing SignalR connection:", err);
-      setTimeout(startConnection, 5000); // Retry after 5 seconds
-    }
+  if (!connectionPromise) {
+    connectionPromise = connection
+      .start()
+      .then(() => {
+        console.log("SignalR connection established");
+      })
+      .catch((err) => {
+        console.error("Error establishing SignalR connection:", err);
+        connectionPromise = null; // Reset the promise so it can retry
+        setTimeout(startConnection, 5000); // Retry after 5 seconds
+      });
   }
+  return connectionPromise;
 }
 
 startConnection();
@@ -34,40 +39,53 @@ export const subscribeToChannel = async (
   channelName: string,
   callback: (message: string) => void
 ) => {
-  await startConnection(); // Ensure the connection is started
-  connection
-    .invoke("SubscribeToChannel", channelName)
-    .catch((err) => console.error(err.toString()));
-  connection.on("ReceiveMessage", (channel, message) => {
-    if (channel === channelName) {
-      callback(message);
-    }
-  });
+  await startConnection();
+  if (connection.state === signalR.HubConnectionState.Connected) {
+    connection
+      .invoke("SubscribeToChannel", channelName)
+      .catch((err) => console.error(err.toString()));
+    connection.on("ReceiveMessage", (channel, message) => {
+      if (channel === channelName) {
+        callback(message);
+      }
+    });
+  } else {
+    console.error("Connection is not in the 'Connected' state.");
+  }
 };
 
 export const publishToChannel = async (
   channelName: string,
   message: string
 ) => {
-  await startConnection(); // Ensure the connection is started
-  connection
-    .invoke("PublishToChannel", channelName, message)
-    .catch((err) => console.error(err.toString()));
+  await startConnection();
+  if (connection.state === signalR.HubConnectionState.Connected) {
+    connection
+      .invoke("PublishToChannel", channelName, message)
+      .catch((err) => console.error(err.toString()));
+  } else {
+    console.error("Connection is not in the 'Connected' state.");
+  }
 };
 
 export const getKeyValuePairsByPattern = async (
   pattern: string
 ): Promise<Record<string, string>> => {
-  await startConnection(); // Ensure the connection is started
-  try {
-    const result = await connection.invoke("GetKeysByPattern", pattern);
-    return result;
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error(err.toString());
-    } else {
-      console.error("An unexpected error occurred:", err);
+  await startConnection();
+  if (connection.state === signalR.HubConnectionState.Connected) {
+    try {
+      const result = await connection.invoke("GetKeysByPattern", pattern);
+      return result;
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error(err.toString());
+      } else {
+        console.error("An unexpected error occurred:", err);
+      }
+      return {};
     }
+  } else {
+    console.error("Connection is not in the 'Connected' state.");
     return {};
   }
 };
