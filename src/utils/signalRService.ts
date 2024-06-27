@@ -1,8 +1,5 @@
 import * as signalR from "@microsoft/signalr";
 
-// Debugging to check if the environment variable is loaded correctly
-console.log("VITE_API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
-
 // Use the environment variable for the base URL
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
 

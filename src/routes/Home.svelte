@@ -27,9 +27,12 @@
     initializeData();
 
     subscribeToChannel('gpu-lock-changes', (message: string) => {
-      const parsedMessage = JSON.parse(message);
-      console.log('Received event data:', parsedMessage);
-      data = { ...data, ...parsedMessage };
+      try {
+        const parsedMessage = JSON.parse(message);
+        data = { ...data, ...parsedMessage };
+      } catch (err) {
+        console.error("Failed to parse message:", err);
+      }
     });
   });
 </script>
