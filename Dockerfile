@@ -25,11 +25,11 @@ FROM nginx:stable-alpine
 # Copy the built files from the builder image to the Nginx HTML directory
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy the Nginx configuration file template
+COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 # Expose port 80
 EXPOSE 80
 
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+# Start Nginx server with environment variable substitution at runtime
+CMD ["sh", "-c", "envsubst '$$API_HOST $$API_PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
