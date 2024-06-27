@@ -13,7 +13,6 @@
     "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "@tsconfig/svelte": "^5.0.4",
     "@types/node": "^20.14.9",
-    "@types/redis": "^4.0.11",
     "svelte": "^4.2.18",
     "svelte-check": "^3.8.1",
     "tslib": "^2.6.3",
@@ -21,7 +20,7 @@
     "vite": "^5.3.1"
   },
   "dependencies": {
-    "redis": "^4.6.14",
+    "@microsoft/signalr": "^8.0.0",
     "svelte-spa-router": "^4.0.1"
   }
 }
