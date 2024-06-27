@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { subscribeToChannel, getKeyValuePairsByPattern } from '../utils/signalRService';
+  import { subscribeToChannel, getKeyValuePairsByPattern } from '../utils/socketIOService';
 
   let data: { [key: string]: string } = {};
   let loading = true;
@@ -9,7 +9,7 @@
     try {
       const initialData = await getKeyValuePairsByPattern('gpu-lock:*');
       const formattedData = Object.entries(initialData).reduce((acc, [key, value]) => {
-        const gpuId = key.split(':').pop(); // Extract the number after the ':'
+        const gpuId = key.split(':').pop();
         if (gpuId) {
           acc[gpuId] = value;
         }
