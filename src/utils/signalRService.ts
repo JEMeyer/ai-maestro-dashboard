@@ -74,7 +74,10 @@ export const getKeyValuePairsByPattern = async (
   await startConnection();
   if (connection.state === signalR.HubConnectionState.Connected) {
     try {
-      const result = await connection.invoke("GetKeysByPattern", pattern);
+      const result = await connection.invoke(
+        "GetKeyValuePairsByPattern",
+        pattern
+      );
       return result;
     } catch (err) {
       if (err instanceof Error) {
