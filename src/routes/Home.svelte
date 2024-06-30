@@ -1,79 +1,24 @@
+<!-- src/routes/Home.svelte -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { subscribeToChannel, getKeyValuePairsByPattern } from '../utils/socketIOService';
+  import { getAuth0Client } from '../authService';
+  import type { User } from '@auth0/auth0-spa-js';
 
-  let data: { [key: string]: string } = {};
-  let loading = true;
+  let user: User | undefined;
 
-  const initializeData = async () => {
-    try {
-      const initialData = await getKeyValuePairsByPattern('gpu-lock:*');
-      const formattedData = Object.entries(initialData).reduce((acc, [key, value]) => {
-        const gpuId = key.split(':').pop();
-        if (gpuId) {
-          acc[gpuId] = value;
-        }
-        return acc;
-      }, {} as { [key: string]: string });
-      data = formattedData;
-    } catch (err) {
-      console.error("Failed to initialize data:", err);
-    } finally {
-      loading = false;
-    }
-  };
-
-  onMount(() => {
-    initializeData();
-
-    subscribeToChannel('gpu-lock-changes', (message: string) => {
-      try {
-        const parsedMessage = JSON.parse(message);
-        data = { ...data, ...parsedMessage };
-      } catch (err) {
-        console.error("Failed to parse message:", err);
-      }
-    });
+  onMount(async () => {
+    const auth0 = getAuth0Client();
+    user = await auth0.getUser();
+    console.log('User information loaded', user);
   });
 </script>
 
-<style>
-  .container {
-    padding: 20px;
-  }
-  .title {
-    text-align: center;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  .status-card {
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-  }
-  .free {
-    background-color: lightgreen;
-  }
-  .locked {
-    background-color: lightcoral;
-  }
-</style>
-
-{#if loading}
-  <div>Loading...</div>
-{:else}
-  <div class="container">
-    <h1 class="title">GPU Lock Dashboard</h1>
-    <div class="grid">
-      {#each Object.keys(data) as key}
-        <div class="status-card {data[key] === '0' ? 'free' : 'locked'}">
-          <h2>GPU {key}</h2>
-          <p>{data[key] === '0' ? 'Free' : 'Locked'}</p>
-        </div>
-      {/each}
-    </div>
+{#if user}
+  <div>
+    <h1>Welcome, {user.name}!</h1>
+    <p>Email: {user.email}</p>
+    <a href="/gpu-locks">Go to GPU Lock Dashboard</a>
   </div>
+{:else}
+  <p>Loading user information...</p>
 {/if}

@@ -1,11 +1,15 @@
-<script>
+<script lang="ts">
   import Router from 'svelte-spa-router';
   import Home from './routes/Home.svelte';
-  import NotFound from './routes/NotFound.svelte'; // Optional, for 404 handling
+  import Login from './routes/Login.svelte';
+  import Callback from './routes/Callback.svelte';
+  import BasicTest from './routes/BasicTest.svelte'
 
   const routes = {
     '/': Home,
-    '*': NotFound, // Optional, for 404 handling
+    '/login': Login,
+    '/callback': Callback,
+    '/gpu-locks': BasicTest
   };
 </script>
 
