@@ -1,11 +1,9 @@
+<!-- src/routes/Login.svelte -->
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { getAuth0Client } from '../authService';
+  import { login } from '../auth';
 
-  onMount(async () => {
-    const auth0 = getAuth0Client();
-    await auth0.loginWithRedirect();
-  });
+  // Automatically initiate the login process when the component is loaded
+  login();
 </script>
 
 <p>Redirecting to login...</p>

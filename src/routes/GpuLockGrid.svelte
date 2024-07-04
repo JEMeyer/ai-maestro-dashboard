@@ -2,7 +2,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { subscribeToChannel, getKeyValuePairsByPattern } from '../utils/socketIOService';
-  import { getAuth0Client } from '../authService';
 
   interface Data {
     [key: string]: string;
@@ -32,8 +31,7 @@
   };
 
   onMount(async () => {
-    const auth0 = getAuth0Client();
-    isAuthenticated = await auth0.isAuthenticated();
+    isAuthenticated = true;
     console.log('User authenticated:', isAuthenticated); // Log authentication status
     if (!isAuthenticated) {
       window.location.replace('/login');

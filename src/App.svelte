@@ -1,16 +1,50 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { initAuth, login, logout, isAuthenticated, user, loading } from './auth';
   import Router from 'svelte-spa-router';
-  import Home from './routes/Home.svelte';
-  import Login from './routes/Login.svelte';
-  import Callback from './routes/Callback.svelte';
-  import BasicTest from './routes/BasicTest.svelte'
+  import routes from './routes';
 
-  const routes = {
-    '/': Home,
-    '/login': Login,
-    '/callback': Callback,
-    '/gpu-locks': BasicTest
-  };
+  let isAuthenticatedValue: boolean | undefined;
+  let userValue: import('@auth0/auth0-spa-js').User | undefined;
+  let loadingValue: boolean | undefined;
+
+  $: isAuthenticated.subscribe(value => isAuthenticatedValue = value);
+  $: user.subscribe(value => userValue = value);
+  $: loading.subscribe(value => loadingValue = value);
+
+  onMount(() => {
+    initAuth();
+  });
 </script>
+
+<style>
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
+    background-color: #f8f9fa;
+  }
+</style>
+
+<div class="nav">
+  <div>
+    <a href="/">Home</a>
+    {#if isAuthenticatedValue}
+      <a href="/protected">Protected</a>
+    {/if}
+  </div>
+  <div>
+    {#if loadingValue}
+      <span>Loading...</span>
+    {:else}
+      {#if isAuthenticatedValue}
+        <span>{userValue?.name}</span>
+        <button on:click={logout}>Logout</button>
+      {:else}
+        <a href="/login">Login</a>
+      {/if}
+    {/if}
+  </div>
+</div>
 
 <Router {routes} />
