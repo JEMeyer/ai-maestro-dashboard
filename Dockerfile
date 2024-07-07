@@ -1,5 +1,8 @@
 # Use a minimal Node.js base image
-FROM node:18-alpine as base
+FROM node:bullseye AS base
+
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Builder stage
 FROM base AS builder
@@ -7,29 +10,31 @@ FROM base AS builder
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy package.json and pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies
-RUN npm install
+RUN pnpm install --frozen-lockfile
 
 # Copy the rest of the project files
 COPY . .
 
-# Build the Vite/Svelte application
-RUN npm run build
+# Build the React app
+RUN pnpm run build
 
 # Final runtime image
-FROM nginx:stable-alpine
+FROM nginx:alpine
 
-# Copy the built files from the builder image to the Nginx HTML directory
+# Copy the built files from the builder image
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy the Nginx configuration file template
-COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
+# Copy nginx config to the container
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
+# Copy a shell script to handle environment variable substitution
+COPY env.sh /docker-entrypoint.d/40-env.sh
+RUN chmod +x /docker-entrypoint.d/40-env.sh
+
 EXPOSE 80
 
-# Start Nginx server with environment variable substitution at runtime
-CMD ["sh", "-c", "envsubst '$$API_HOST $$API_PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["nginx", "-g", "daemon off;"]
