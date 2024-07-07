@@ -12,6 +12,8 @@ const config = {
   AUTH_CLIENT_SECRET: process.env.REACT_APP_AUTHENTIK_CLIENT_SECRET!,
 };
 
+console.log("Config:", config);
+
 const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
   return (
     <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>
