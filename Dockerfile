@@ -31,10 +31,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx config to the container
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy a shell script to handle environment variable substitution
-COPY env.sh /docker-entrypoint.d/40-env.sh
-RUN chmod +x /docker-entrypoint.d/40-env.sh
-
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
