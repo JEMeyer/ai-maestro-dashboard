@@ -19,6 +19,9 @@ RUN pnpm install --frozen-lockfile
 # Copy the rest of the project files
 COPY . .
 
+# Copy the .env.template to .env
+COPY .env.template .env
+
 # Build the React app
 RUN pnpm run build
 
