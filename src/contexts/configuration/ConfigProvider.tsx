@@ -19,8 +19,6 @@ const config = {
     "REACT_APP_AUTHENTIK_CLIENT_SECRET_PLACEHOLDER",
 };
 
-console.log("Config:", config);
-
 const ConfigProvider: React.FC<ConfigProviderProps> = ({ children }) => {
   return (
     <ConfigContext.Provider value={config}>{children}</ConfigContext.Provider>
