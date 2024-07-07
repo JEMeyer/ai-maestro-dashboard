@@ -26,7 +26,7 @@ RUN pnpm run build
 FROM nginx:alpine
 
 # Copy the built files from the builder image
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/build /usr/share/nginx/html
 
 # Copy nginx config to the container
 COPY nginx.conf /etc/nginx/conf.d/default.conf
