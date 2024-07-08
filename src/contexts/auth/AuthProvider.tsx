@@ -11,6 +11,7 @@ import { User } from "../../types";
 import { useConfig } from "../../hooks/useConfig";
 import { useFetchWithAuth } from "../../hooks/useFetchWithAuth";
 import { useCookies } from "react-cookie";
+import { useAppState } from "../../hooks/useAppState";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -22,12 +23,14 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
   const [cookies, , deleteAuthToken] = useCookies(["auth"]);
   const fetchWithAuth = useFetchWithAuth();
+  const { setIsBusy } = useAppState();
 
   const handleLogout = useCallback(() => {
     deleteAuthToken("auth");
     setUser(null);
     navigate("/");
-  }, [deleteAuthToken, navigate]);
+    setIsBusy(false);
+  }, [deleteAuthToken, navigate, setIsBusy]);
 
   const fetchUserDetails = useCallback(async () => {
     try {
@@ -40,12 +43,26 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [OAUTH_URL, fetchWithAuth, handleLogout]);
 
   useEffect(() => {
-    if (cookies.auth != null) {
-      fetchUserDetails();
-    } else {
-      setUser(null);
+    //changes to the auth token reset user status
+    if (cookies.auth !== undefined) {
+      setUser(undefined);
     }
-  }, [fetchUserDetails, cookies.auth]);
+  }, [cookies.auth]);
+
+  useEffect(() => {
+    const checkAuthToken = async () => {
+      if (user === undefined) {
+        if (cookies.auth != null) {
+          await fetchUserDetails();
+        } else {
+          setUser(null);
+        }
+        setIsBusy(false);
+      }
+    };
+
+    checkAuthToken();
+  }, [fetchUserDetails, cookies.auth, user, setIsBusy]);
 
   const handleLogin = useCallback(async () => {
     const clientId = OAUTH_CLIENT_ID;

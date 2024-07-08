@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import Loading from "./Loading";
 import { useConfig } from "../hooks/useConfig";
+import { useAuth } from "../hooks/useAuth";
+import Loading from "./Loading";
 
 const Callback: React.FC = () => {
   const [, setCookie] = useCookies(["auth"]);
+  const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { OAUTH_URL, OAUTH_CLIENT_ID } = useConfig();
@@ -40,17 +42,24 @@ const Callback: React.FC = () => {
           // Development environment: No restrictions on secure connections or SameSite policy
           cookieOptions = { path: "/", secure: false, sameSite: "lax" };
         }
-        setCookie("auth", data.access_token, cookieOptions);
 
-        navigate("/");
+        setCookie("auth", data.access_token, cookieOptions);
       } catch (error) {
         console.error("Error fetching token", error);
+        // TODO redirect to error page
       }
     };
     if (code != null) {
       fetchToken(code);
     }
   }, [OAUTH_CLIENT_ID, OAUTH_URL, location.search, navigate, setCookie]);
+
+  // Wait until the auth is actually updated to redirect to /dashboard
+  useEffect(() => {
+    if (user != null) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   return <Loading />;
 };

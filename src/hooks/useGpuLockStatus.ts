@@ -10,9 +10,8 @@ interface Data {
 }
 
 const useGpuLockStatus = () => {
-  const [data, setData] = useState<Data>({});
   const { API_BASE_URL } = useConfig();
-  const [loading, setLoading] = useState<boolean>(true);
+  const [data, setData] = useState<Data | null>(null);
 
   useEffect(() => {
     // Fetch initial status
@@ -33,10 +32,9 @@ const useGpuLockStatus = () => {
         );
 
         setData(transformedData);
-        setLoading(false);
       } catch (error) {
+        setData({});
         console.error("Error fetching initial status:", error);
-        setLoading(false);
       }
     };
 
@@ -69,7 +67,7 @@ const useGpuLockStatus = () => {
     };
   }, [API_BASE_URL]);
 
-  return { data, loading };
+  return { data };
 };
 
 export default useGpuLockStatus;

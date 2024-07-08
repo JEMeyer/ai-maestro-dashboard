@@ -5,11 +5,9 @@ import LoginLogoutButton from "../LoginLogoutButton";
 import Loading from "../Loading";
 
 const GpuLockGrid: React.FC = () => {
-  const { data, loading } = useGpuLockStatus();
+  const { data } = useGpuLockStatus();
 
-  if (loading) {
-    return <Loading />;
-  }
+  if (data == null) return <Loading />;
 
   return (
     <div className="container">

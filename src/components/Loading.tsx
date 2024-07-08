@@ -1,10 +1,10 @@
-import React from "react";
 import { ClipLoader } from "react-spinners";
+import React from "react";
 
 const Loading: React.FC = () => {
   return (
     <div style={styles.container}>
-      <ClipLoader color="#36d7b7" size={50} />
+      <ClipLoader color="#36d7b7" size={100} />
     </div>
   );
 };

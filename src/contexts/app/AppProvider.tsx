@@ -6,7 +6,7 @@ interface AppProviderProps {
 }
 
 const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  const [isBusy, setIsBusy] = useState(false);
+  const [isBusy, setIsBusy] = useState(true);
 
   return (
     <AppContext.Provider value={{ isBusy, setIsBusy }}>

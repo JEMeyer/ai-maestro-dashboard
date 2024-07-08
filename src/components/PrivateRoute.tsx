@@ -1,7 +1,6 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import Loading from "./Loading";
 
 interface PrivateRouteProps {
   element: React.ReactElement;
@@ -15,7 +14,8 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   const { user } = useAuth();
   const location = useLocation();
 
-  if (user === undefined) return <Loading />;
+  // Wait for user to load
+  if (user === undefined) return <></>;
 
   if (user === null) {
     return <Navigate to="/" state={{ from: location }} />;
