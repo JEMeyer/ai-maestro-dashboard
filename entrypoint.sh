@@ -3,10 +3,9 @@
 # Function to replace placeholders with environment variables
 replace_placeholders() {
   local file=$1
+  sed -i "s|REACT_APP_OAUTH_URL_PLACEHOLDER|${REACT_APP_OAUTH_URL}|g" $file
+  sed -i "s|REACT_APP_OAUTH_CLIENT_ID_PLACEHOLDER|${REACT_APP_OAUTH_CLIENT_ID}|g" $file
   sed -i "s|REACT_APP_API_BASE_URL_PLACEHOLDER|${REACT_APP_API_BASE_URL}|g" $file
-  sed -i "s|REACT_APP_AUTHENTIK_URL_PLACEHOLDER|${REACT_APP_AUTHENTIK_URL}|g" $file
-  sed -i "s|REACT_APP_AUTHENTIK_CLIENT_ID_PLACEHOLDER|${REACT_APP_AUTHENTIK_CLIENT_ID}|g" $file
-  sed -i "s|REACT_APP_AUTHENTIK_CLIENT_SECRET_PLACEHOLDER|${REACT_APP_AUTHENTIK_CLIENT_SECRET}|g" $file
 }
 
 # Replace placeholders in all HTML and JS files

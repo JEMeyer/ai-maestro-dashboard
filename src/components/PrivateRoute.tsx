@@ -12,14 +12,12 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   element,
   requiredRole,
 }) => {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  if (user === undefined) return <Loading />;
 
-  if (!isAuthenticated) {
+  if (user === null) {
     return <Navigate to="/" state={{ from: location }} />;
   }
 

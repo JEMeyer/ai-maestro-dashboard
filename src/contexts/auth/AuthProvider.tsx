@@ -6,76 +6,62 @@ import React, {
   useMemo,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { AuthContext } from "./authContext";
 import { User } from "../../types";
 import { useConfig } from "../../hooks/useConfig";
+import { useFetchWithAuth } from "../../hooks/useFetchWithAuth";
+import { useCookies } from "react-cookie";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const { AUTH_URL } = useConfig();
+  const [user, setUser] = useState<User | null | undefined>(undefined);
+  const { OAUTH_URL, OAUTH_CLIENT_ID } = useConfig();
   const navigate = useNavigate();
+  const [cookies, , deleteAuthToken] = useCookies(["auth"]);
+  const fetchWithAuth = useFetchWithAuth();
 
-  const logout = useCallback(() => {
-    Cookies.remove("access_token");
+  const handleLogout = useCallback(() => {
+    deleteAuthToken("auth");
     setUser(null);
-    setIsLoading(false);
     navigate("/");
-  }, [navigate]);
+  }, [deleteAuthToken, navigate]);
 
-  const fetchUserDetails = useCallback(
-    async (token: string) => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `${AUTH_URL}/application/o/userinfo/?access_token=${token}`
-        );
-        const data = await response.json();
-        setUser(data);
-      } catch (error) {
-        console.error("Failed to fetch user details", error);
-        logout();
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [AUTH_URL, logout]
-  );
+  const fetchUserDetails = useCallback(async () => {
+    try {
+      const data = await fetchWithAuth(`${OAUTH_URL}/userinfo`);
+      setUser(data);
+    } catch (error) {
+      console.error("Failed to fetch user details", error);
+      handleLogout();
+    }
+  }, [OAUTH_URL, fetchWithAuth, handleLogout]);
 
   useEffect(() => {
-    const token = Cookies.get("access_token");
-    if (token) {
-      fetchUserDetails(token);
+    if (cookies.auth != null) {
+      fetchUserDetails();
     } else {
-      setIsLoading(false);
+      setUser(null);
     }
-  }, [fetchUserDetails]);
+  }, [fetchUserDetails, cookies.auth]);
 
-  const login = useCallback(
-    async (token: string) => {
-      Cookies.set("access_token", token, { expires: 1 });
-      await fetchUserDetails(token);
-    },
-    [fetchUserDetails]
-  );
+  const handleLogin = useCallback(async () => {
+    const clientId = OAUTH_CLIENT_ID;
+    const redirectUri = `${window.location.origin}/callback`;
+    const authUrl = `${OAUTH_URL}/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code`;
 
-  const isAuthenticated = !!user;
+    window.location.href = authUrl;
+  }, [OAUTH_CLIENT_ID, OAUTH_URL]);
 
   const contextValue = useMemo(
     () => ({
       user,
-      login,
-      logout,
-      isAuthenticated,
-      isLoading,
-      setIsLoading,
+      handleLogin,
+      handleLogout,
     }),
-    [user, isAuthenticated, isLoading, login, logout]
+    [user, handleLogin, handleLogout]
   );
 
   return (
