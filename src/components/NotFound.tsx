@@ -64,17 +64,13 @@ const NotFound = () => {
     setSelectedWebp(webps[randomIndex]);
   }, []);
 
-  const handleNav = (param: string | number) => {
-    navigate(param);
-  };
-
   return (
     <NotFoundContainer>
       <Title>404 - Page Not Found</Title>
       <Text>What the sigma! It seems like you've hit a dead end.</Text>
       {selectedWebp && <Image src={selectedWebp} alt="Funny 404" />}{" "}
-      <Button onClick={() => handleNav(-1)}>Go Back</Button>
-      <Button onClick={() => handleNav("/")}>Go Home</Button>
+      <Button onClick={() => navigate(-1)}>Go Back</Button>
+      <Button onClick={() => navigate("/")}>Go Home</Button>
     </NotFoundContainer>
   );
 };
