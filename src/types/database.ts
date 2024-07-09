@@ -26,24 +26,25 @@ export function getComputerlId(
 }
 
 export function getGpuId(
-  gpu: Pick<GPU, "id" | "name" | "vramSize">,
+  gpu: Pick<GPU, "id" | "name" | "vram_size">,
   index: number
 ): string {
-  return gpu.id ?? `${gpu.name}-${gpu.vramSize}_${index}`;
+  return gpu.id ?? `${gpu.name}-${gpu.vram_size}_${index}`;
 }
 
 export interface GPU extends BaseItem {
-  vramSize: number;
-  computerId: string;
+  vram_size: number;
+  computer_id: string;
   weight?: number;
 }
 
 export interface Computer extends BaseItem {
-  ipAddr: string;
+  edge_server_port: string;
+  ip_addr: string;
 }
 
 export interface Assignment extends BaseItem {
-  modelName: string;
-  gpuIds: string[];
+  model_name: string;
+  gpu_ids: string[];
   port: number;
 }

@@ -21,8 +21,9 @@ type GpuListProps = {
 };
 
 export const GPUList: React.FC<GpuListProps> = ({ gpus }) => {
+  console.log(gpus);
   return (
-    <Droppable droppableId={"gpus_for" + gpus[0].computerId}>
+    <Droppable droppableId={"gpus_for" + gpus[0].computer_id}>
       {(provided) => (
         <List ref={provided.innerRef} {...provided.droppableProps}>
           {gpus.map((gpu, index) => {
@@ -48,7 +49,7 @@ const GPU: React.FC<GpuProps> = ({ gpu, index }) => {
           {...provided.dragHandleProps}
           ref={provided.innerRef}
         >
-          {gpu.name} - {gpu.vramSize} GB
+          {gpu.name} - {gpu.vram_size} GB
         </Container>
       )}
     </Draggable>

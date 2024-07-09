@@ -23,6 +23,8 @@ const List = styled.div`
   padding: 8px;
   overflow: hidden;
   transition: max-height 0.3s ease;
+  flex: 1 0 auto; // grow up to its maximum content width
+  max-width: 450px;
 `;
 
 export const ComputerList: React.FC = () => {
@@ -33,25 +35,29 @@ export const ComputerList: React.FC = () => {
     return <span>Loading computers...</span>;
   }
 
+  const a = gpus.filter(({ computer_id }) => computers[0].id === computer_id);
+  console.log(gpus);
+  console.log("filtered:", a);
+
   return (
     <>
-      {computers.map((computer) => {
-        <Container key={computer.id ?? computer.name + computer.ipAddr}>
+      {computers.map((computer) => (
+        <Container key={computer.id ?? computer.name + computer.ip_addr}>
           <Title>{computer.name}</Title>
           <Droppable droppableId={`computer_${computer.name}_${computer.id}`}>
             {(provided) => (
               <List ref={provided.innerRef} {...provided.droppableProps}>
                 <GPUList
                   gpus={gpus.filter(
-                    ({ computerId }) => computer.id === computerId
+                    ({ computer_id }) => computer.id === computer_id
                   )}
                 />
                 {provided.placeholder}
               </List>
             )}
           </Droppable>
-        </Container>;
-      })}
+        </Container>
+      ))}
     </>
   );
 };

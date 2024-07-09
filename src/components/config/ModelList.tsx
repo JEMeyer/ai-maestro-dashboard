@@ -24,6 +24,8 @@ const List = styled.div<{ $isCollapsed: boolean }>`
   max-height: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "1000px")};
   overflow: hidden;
   transition: max-height 0.3s ease;
+  flex: 1 0 auto; // grow up to its maximum content width
+  max-width: 450px;
 `;
 
 const Arrow = styled.span<{ $isCollapsed: boolean }>`

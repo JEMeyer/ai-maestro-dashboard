@@ -35,7 +35,7 @@ export const useAssignmentsForGpus = (gpuIds: string[]) => {
 
   return useMemo(() => {
     return assignments?.filter((assignment) =>
-      gpuIds.some((id) => assignment.gpuIds.includes(id))
+      gpuIds.some((id) => assignment.gpu_ids.includes(id))
     );
   }, [assignments, gpuIds]);
 };
