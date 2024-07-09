@@ -1,7 +1,7 @@
 import React from "react";
 import { getModelId, Model } from "../../types/database";
 import styled from "styled-components";
-import { Draggable } from "react-beautiful-dnd";
+import { Draggable } from "@hello-pangea/dnd";
 
 const Container = styled.div`
   border: 1px solid lightgray;
@@ -18,7 +18,7 @@ type Props = {
 
 export const ModelItem: React.FC<Props> = ({ model, index }) => {
   return (
-    <Draggable draggableId={getModelId(model)} index={index}>
+    <Draggable draggableId={getModelId(model, index)} index={index}>
       {(provided) => (
         <Container
           {...provided.draggableProps}

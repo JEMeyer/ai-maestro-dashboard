@@ -10,6 +10,12 @@ const allModelsAtom = atom<Model[] | null>({
 
 export const useAllModels = () => {
   const [models, setModels] = useRecoilState(allModelsAtom);
+
+  return { models, setModels };
+};
+
+export const useAllModelByType = () => {
+  const [models, setModels] = useRecoilState(allModelsAtom);
   const fetchAllModels = useFetchAllModelTypes<Model>("models");
 
   useEffect(() => {

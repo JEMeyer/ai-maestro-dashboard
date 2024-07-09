@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ModelItem } from "./ModelItem";
-import { useAllModels } from "../../state/models";
+import { useAllModelByType } from "../../state/models";
 import styled from "styled-components";
-import { Droppable } from "react-beautiful-dnd";
+import { Droppable } from "@hello-pangea/dnd";
 import { getModelId } from "../../types/database";
 
 const Container = styled.div`
@@ -19,23 +19,23 @@ const Title = styled.h3`
   align-items: center;
 `;
 
-const List = styled.div<{ isCollapsed: boolean }>`
+const List = styled.div<{ $isCollapsed: boolean }>`
   padding: 8px;
-  max-height: ${({ isCollapsed }) => (isCollapsed ? "0" : "1000px")};
+  max-height: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "1000px")};
   overflow: hidden;
   transition: max-height 0.3s ease;
 `;
 
-const Arrow = styled.span<{ isCollapsed: boolean }>`
+const Arrow = styled.span<{ $isCollapsed: boolean }>`
   display: inline-block;
   margin-left: 8px;
-  transform: ${({ isCollapsed }) =>
-    isCollapsed ? "rotate(-90deg)" : "rotate(0)"};
+  transform: ${({ $isCollapsed }) =>
+    $isCollapsed ? "rotate(-90deg)" : "rotate(0)"};
   transition: transform 0.3s ease;
 `;
 
 export const ModelList: React.FC = () => {
-  const { llms, diffusors, speechModels } = useAllModels();
+  const { llms, diffusors, speechModels } = useAllModelByType();
   const [isLLMsCollapsed, setIsLLMsCollapsed] = useState(false);
   const [isDiffusorsCollapsed, setIsDiffusorsCollapsed] = useState(false);
   const [isSpeechModelsCollapsed, setIsSpeechModelsCollapsed] = useState(false);
@@ -49,18 +49,18 @@ export const ModelList: React.FC = () => {
       <Container>
         <Title onClick={() => setIsLLMsCollapsed(!isLLMsCollapsed)}>
           LLMs
-          <Arrow isCollapsed={isLLMsCollapsed}>▼</Arrow>
+          <Arrow $isCollapsed={isLLMsCollapsed}>▼</Arrow>
         </Title>
         <Droppable droppableId={"llm_list"}>
           {(provided) => (
             <List
               ref={provided.innerRef}
               {...provided.droppableProps}
-              isCollapsed={isLLMsCollapsed}
+              $isCollapsed={isLLMsCollapsed}
             >
               {llms!.map((model, index) => (
                 <ModelItem
-                  key={getModelId(model)}
+                  key={getModelId(model, index)}
                   model={model}
                   index={index}
                 />
@@ -74,18 +74,18 @@ export const ModelList: React.FC = () => {
       <Container>
         <Title onClick={() => setIsDiffusorsCollapsed(!isDiffusorsCollapsed)}>
           Image Generators
-          <Arrow isCollapsed={isDiffusorsCollapsed}>▼</Arrow>
+          <Arrow $isCollapsed={isDiffusorsCollapsed}>▼</Arrow>
         </Title>
         <Droppable droppableId={"diffusor_list"}>
           {(provided) => (
             <List
               ref={provided.innerRef}
               {...provided.droppableProps}
-              isCollapsed={isDiffusorsCollapsed}
+              $isCollapsed={isDiffusorsCollapsed}
             >
               {diffusors!.map((model, index) => (
                 <ModelItem
-                  key={getModelId(model)}
+                  key={getModelId(model, index)}
                   model={model}
                   index={index}
                 />
@@ -101,18 +101,18 @@ export const ModelList: React.FC = () => {
           onClick={() => setIsSpeechModelsCollapsed(!isSpeechModelsCollapsed)}
         >
           Speech Models
-          <Arrow isCollapsed={isSpeechModelsCollapsed}>▼</Arrow>
+          <Arrow $isCollapsed={isSpeechModelsCollapsed}>▼</Arrow>
         </Title>
         <Droppable droppableId={"speech_model_list"}>
           {(provided) => (
             <List
               ref={provided.innerRef}
               {...provided.droppableProps}
-              isCollapsed={isSpeechModelsCollapsed}
+              $isCollapsed={isSpeechModelsCollapsed}
             >
               {speechModels!.map((model, index) => (
                 <ModelItem
-                  key={getModelId(model)}
+                  key={getModelId(model, index)}
                   model={model}
                   index={index}
                 />

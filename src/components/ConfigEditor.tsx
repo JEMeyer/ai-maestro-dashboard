@@ -1,12 +1,13 @@
-import { DragDropContext } from "react-beautiful-dnd";
-import { ModelList } from "./config/ModelList";
+import { DragDropContext } from "@hello-pangea/dnd";
+import { ConfigurationVisualizer } from "./config/ConfigurationVisualizer";
+import useDragHandlers from "../hooks/useDragEndHandler";
 
 const ConfigEditor = () => {
-  const onDragEnd = () => {};
+  const handleDragEnd = useDragHandlers();
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <ModelList />
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <ConfigurationVisualizer />
     </DragDropContext>
   );
 };

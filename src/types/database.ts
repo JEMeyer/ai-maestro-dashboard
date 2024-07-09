@@ -11,8 +11,25 @@ export interface Model extends BaseItem {
   model_type: ModelType;
 }
 
-export function getModelId(model: Pick<Model, "id" | "name" | "size">): string {
-  return model.id ?? `${model.name}-${model.size}`;
+export function getModelId(
+  model: Pick<Model, "id" | "name" | "size">,
+  index: number
+): string {
+  return model.id ?? `${model.name}-${model.size}_${index}`;
+}
+
+export function getComputerlId(
+  model: Pick<Computer, "id" | "name">,
+  index: number
+): string {
+  return model.id ?? `${model.name}_${index}`;
+}
+
+export function getGpuId(
+  gpu: Pick<GPU, "id" | "name" | "vramSize">,
+  index: number
+): string {
+  return gpu.id ?? `${gpu.name}-${gpu.vramSize}_${index}`;
 }
 
 export interface GPU extends BaseItem {

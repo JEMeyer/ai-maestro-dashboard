@@ -1,14 +1,14 @@
 import { atom, useRecoilState } from "recoil";
 import { Assignment } from "../types/database";
 import { useFetchAllModelTypes } from "../services/database";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const allAssignmentsAtom = atom<Assignment[] | null>({
   key: "allAssignmentsAtom",
   default: null,
 });
 
-export const useAllAssignments = () => {
+const useAllAssignments = () => {
   const [assignments, setAssignments] = useRecoilState(allAssignmentsAtom);
   const fetchAllModels = useFetchAllModelTypes<Assignment>("gpus");
 
@@ -28,4 +28,14 @@ export const useAllAssignments = () => {
   }, [assignments, fetchAllModels, setAssignments]);
 
   return assignments;
+};
+
+export const useAssignmentsForGpus = (gpuIds: string[]) => {
+  const assignments = useAllAssignments();
+
+  return useMemo(() => {
+    return assignments?.filter((assignment) =>
+      gpuIds.some((id) => assignment.gpuIds.includes(id))
+    );
+  }, [assignments, gpuIds]);
 };

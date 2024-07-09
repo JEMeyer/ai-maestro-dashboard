@@ -10,9 +10,8 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@atlaskit/css-reset": "^6.9.1",
+    "@hello-pangea/dnd": "^16.6.0",
     "react": "^18.3.1",
-    "react-beautiful-dnd": "^13.1.1",
     "react-cookie": "^7.1.4",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.1",
