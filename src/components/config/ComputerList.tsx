@@ -19,12 +19,13 @@ const Title = styled.h3`
   align-items: center;
 `;
 
-const List = styled.div`
+const List = styled.div<{ $isDraggingOver: boolean }>`
   padding: 8px;
   overflow: hidden;
   transition: max-height 0.3s ease;
   flex: 1 0 auto; // grow up to its maximum content width
   max-width: 450px;
+  background-color: ${(props) => (props.$isDraggingOver ? "skyblue" : "white")};
 `;
 
 export const ComputerList: React.FC = () => {
@@ -35,18 +36,18 @@ export const ComputerList: React.FC = () => {
     return <span>Loading computers...</span>;
   }
 
-  const a = gpus.filter(({ computer_id }) => computers[0].id === computer_id);
-  console.log(gpus);
-  console.log("filtered:", a);
-
   return (
     <>
       {computers.map((computer) => (
         <Container key={computer.id ?? computer.name + computer.ip_addr}>
           <Title>{computer.name}</Title>
           <Droppable droppableId={`computer_${computer.name}_${computer.id}`}>
-            {(provided) => (
-              <List ref={provided.innerRef} {...provided.droppableProps}>
+            {(provided, snapshot) => (
+              <List
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                $isDraggingOver={snapshot.isDraggingOver}
+              >
                 <GPUList
                   gpus={gpus.filter(
                     ({ computer_id }) => computer.id === computer_id

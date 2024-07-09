@@ -19,13 +19,14 @@ const Title = styled.h3`
   align-items: center;
 `;
 
-const List = styled.div<{ $isCollapsed: boolean }>`
+const List = styled.div<{ $isCollapsed: boolean; $isDraggingOver: boolean }>`
   padding: 8px;
   max-height: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "1000px")};
   overflow: hidden;
   transition: max-height 0.3s ease;
   flex: 1 0 auto; // grow up to its maximum content width
   max-width: 450px;
+  background-color: ${(props) => (props.$isDraggingOver ? "skyblue" : "white")};
 `;
 
 const Arrow = styled.span<{ $isCollapsed: boolean }>`
@@ -54,11 +55,12 @@ export const ModelList: React.FC = () => {
           <Arrow $isCollapsed={isLLMsCollapsed}>▼</Arrow>
         </Title>
         <Droppable droppableId={"llm_list"}>
-          {(provided) => (
+          {(provided, snapshot) => (
             <List
               ref={provided.innerRef}
               {...provided.droppableProps}
               $isCollapsed={isLLMsCollapsed}
+              $isDraggingOver={snapshot.isDraggingOver}
             >
               {llms!.map((model, index) => (
                 <ModelItem
@@ -79,11 +81,12 @@ export const ModelList: React.FC = () => {
           <Arrow $isCollapsed={isDiffusorsCollapsed}>▼</Arrow>
         </Title>
         <Droppable droppableId={"diffusor_list"}>
-          {(provided) => (
+          {(provided, snapshot) => (
             <List
               ref={provided.innerRef}
               {...provided.droppableProps}
               $isCollapsed={isDiffusorsCollapsed}
+              $isDraggingOver={snapshot.isDraggingOver}
             >
               {diffusors!.map((model, index) => (
                 <ModelItem
@@ -106,11 +109,12 @@ export const ModelList: React.FC = () => {
           <Arrow $isCollapsed={isSpeechModelsCollapsed}>▼</Arrow>
         </Title>
         <Droppable droppableId={"speech_model_list"}>
-          {(provided) => (
+          {(provided, snapshot) => (
             <List
               ref={provided.innerRef}
               {...provided.droppableProps}
               $isCollapsed={isSpeechModelsCollapsed}
+              $isDraggingOver={snapshot.isDraggingOver}
             >
               {speechModels!.map((model, index) => (
                 <ModelItem

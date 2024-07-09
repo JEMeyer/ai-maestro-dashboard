@@ -18,12 +18,12 @@ const Grid = styled.div`
   gap: 20px;
 `;
 
-const StatusCard = styled.div<{ isLocked: boolean }>`
+const StatusCard = styled.div<{ $isLocked: boolean }>`
   padding: 20px;
   border-radius: 8px;
   text-align: center;
   background-color: ${(props) =>
-    props.isLocked ? "lightcoral" : "lightgreen"};
+    props.$isLocked ? "lightcoral" : "lightgreen"};
 `;
 
 const GpuLockGrid: React.FC = () => {
@@ -38,7 +38,7 @@ const GpuLockGrid: React.FC = () => {
         {Object.keys(data).map((key) => {
           const gpuData = data[key];
           return (
-            <StatusCard isLocked={gpuData.ModelInUse !== ""} key={key}>
+            <StatusCard $isLocked={gpuData.ModelInUse !== ""} key={key}>
               <h2>{key}</h2>
               <p>
                 {gpuData.ModelInUse !== ""

@@ -29,7 +29,7 @@ export function getGpuId(
   gpu: Pick<GPU, "id" | "name" | "vram_size">,
   index: number
 ): string {
-  return gpu.id ?? `${gpu.name}-${gpu.vram_size}_${index}`;
+  return `${gpu.id}-${gpu.name}-${gpu.vram_size}_${index}`;
 }
 
 export interface GPU extends BaseItem {
