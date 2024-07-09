@@ -36,9 +36,6 @@ export const useAllModels = () => {
       (model) => model.model_type === "stt" || model.model_type === "tts"
     );
 
-    // eslint-disable-next-line no-debugger
-    debugger;
-
     return { llms, diffusors, speechModels };
   }, [models]);
 
