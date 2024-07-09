@@ -8,7 +8,11 @@ export type TableNames = "computers" | "models" | "gpus" | "assignments";
 type ModelType = "llm" | "diffusor" | "stt" | "tts";
 export interface Model extends BaseItem {
   size: number;
-  type: ModelType;
+  model_type: ModelType;
+}
+
+export function getModelId(model: Pick<Model, "id" | "name" | "size">): string {
+  return model.id ?? `${model.name}-${model.size}`;
 }
 
 export interface GPU extends BaseItem {

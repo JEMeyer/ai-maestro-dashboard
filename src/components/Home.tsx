@@ -1,12 +1,7 @@
-import LoginLogoutButton from "./LoginLogoutButton";
+import GpuLockGrid from "./GpuLockGrid";
 
 const Home = () => {
-  return (
-    <div className="root">
-      <h1>Log in with OAuth2</h1>
-      <LoginLogoutButton />
-    </div>
-  );
+  return <GpuLockGrid />;
 };
 
 export default Home;

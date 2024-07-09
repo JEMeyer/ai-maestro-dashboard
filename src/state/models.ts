@@ -1,7 +1,7 @@
 import { atom, useRecoilState } from "recoil";
 import { Model } from "../types/database";
 import { useFetchAllModelTypes } from "../services/database";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 const allModelsAtom = atom<Model[] | null>({
   key: "allModelsAtom",
@@ -27,5 +27,20 @@ export const useAllModels = () => {
     fetchData();
   }, [models, fetchAllModels, setModels]);
 
-  return models;
+  const state = useMemo(() => {
+    const llms = models?.filter((model) => model.model_type === "llm");
+    const diffusors = models?.filter(
+      (model) => model.model_type === "diffusor"
+    );
+    const speechModels = models?.filter(
+      (model) => model.model_type === "stt" || model.model_type === "tts"
+    );
+
+    // eslint-disable-next-line no-debugger
+    debugger;
+
+    return { llms, diffusors, speechModels };
+  }, [models]);
+
+  return state;
 };
