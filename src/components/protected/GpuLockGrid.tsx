@@ -3,6 +3,7 @@ import "./GpuLockGrid.css";
 import useGpuLockStatus from "../../hooks/useGpuLockStatus";
 import LoginLogoutButton from "../LoginLogoutButton";
 import Loading from "../Loading";
+import { ModelList } from "../config/ModelList";
 
 const GpuLockGrid: React.FC = () => {
   const { data } = useGpuLockStatus();
@@ -14,6 +15,7 @@ const GpuLockGrid: React.FC = () => {
       <div className="title">
         <LoginLogoutButton />
       </div>
+      <ModelList />
       <h1 className="title">Protected GPU Lock Dashboard</h1>
       <div className="grid">
         {Object.keys(data).map((key) => {
