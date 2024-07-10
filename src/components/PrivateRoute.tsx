@@ -18,7 +18,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   if (user === undefined) return <></>;
 
   if (user === null) {
-    return <Navigate to="/" state={{ from: location }} />;
+    return <Navigate to="/unauthenticated" state={{ from: location }} />;
   }
 
   if (requiredRole && user?.role !== requiredRole) {

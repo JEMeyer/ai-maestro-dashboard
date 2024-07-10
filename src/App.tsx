@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Unauthorized from "./components/Unauthorized";
 import PrivateRoute from "./components/PrivateRoute";
-import GpuLockGrid from "./components/GpuLockGrid";
 import Callback from "./components/Callback";
 import LoadingWrapper from "./components/LoadingWrapper";
 import { RecoilRoot } from "recoil";
@@ -13,6 +12,9 @@ import { AuthProvider } from "./contexts/auth/AuthProvider";
 import Header from "./components/Header";
 import ConfigEditor from "./components/ConfigEditor";
 import NotFound from "./components/NotFound";
+import About from "./components/About";
+import Contact from "./components/Contact";
+import Unauthenticated from "./components/Unauthenticated";
 
 function App() {
   return (
@@ -31,14 +33,11 @@ function App() {
                       path="/config"
                       element={<PrivateRoute element={<ConfigEditor />} />}
                     />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
                     <Route
-                      path="/adminDashboad"
-                      element={
-                        <PrivateRoute
-                          element={<GpuLockGrid />}
-                          requiredRole="admin"
-                        />
-                      }
+                      path="/unauthenticated"
+                      element={<Unauthenticated />}
                     />
                     <Route path="/unauthorized" element={<Unauthorized />} />
                     <Route path="*" element={<NotFound />} />
