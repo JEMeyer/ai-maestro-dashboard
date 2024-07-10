@@ -7,7 +7,6 @@ import LoadingWrapper from "./components/LoadingWrapper";
 import { RecoilRoot } from "recoil";
 import { CookiesProvider } from "react-cookie";
 import { ConfigProvider } from "./contexts/configuration/ConfigProvider";
-import { AppProvider } from "./contexts/app/AppProvider";
 import { AuthProvider } from "./contexts/auth/AuthProvider";
 import Header from "./components/Header";
 import ConfigEditor from "./components/ConfigEditor";
@@ -22,29 +21,27 @@ function App() {
       <RecoilRoot>
         <CookiesProvider>
           <ConfigProvider>
-            <AppProvider>
-              <AuthProvider>
-                <LoadingWrapper>
-                  <Header />
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/callback" element={<Callback />} />
-                    <Route
-                      path="/config"
-                      element={<PrivateRoute element={<ConfigEditor />} />}
-                    />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route
-                      path="/unauthenticated"
-                      element={<Unauthenticated />}
-                    />
-                    <Route path="/unauthorized" element={<Unauthorized />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </LoadingWrapper>
-              </AuthProvider>
-            </AppProvider>
+            <AuthProvider>
+              <LoadingWrapper>
+                <Header />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/callback" element={<Callback />} />
+                  <Route
+                    path="/config"
+                    element={<PrivateRoute element={<ConfigEditor />} />}
+                  />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route
+                    path="/unauthenticated"
+                    element={<Unauthenticated />}
+                  />
+                  <Route path="/unauthorized" element={<Unauthorized />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </LoadingWrapper>
+            </AuthProvider>
           </ConfigProvider>
         </CookiesProvider>
       </RecoilRoot>

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { useAppState } from "../hooks/useAppState";
 import { useAuth } from "../hooks/useAuth";
+import { useSetIsBusy } from "../state/app";
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -126,7 +126,7 @@ const Button = styled.button`
 
 const Header: React.FC = () => {
   const { handleLogin, handleLogout, user } = useAuth();
-  const { setIsBusy } = useAppState();
+  const setIsBusy = useSetIsBusy();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (

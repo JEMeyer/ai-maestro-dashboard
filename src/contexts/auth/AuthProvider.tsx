@@ -11,7 +11,7 @@ import { User } from "../../types";
 import { useConfig } from "../../hooks/useConfig";
 import { useFetchWithAuth } from "../../hooks/useFetchWithAuth";
 import { useCookies } from "react-cookie";
-import { useAppState } from "../../hooks/useAppState";
+import { useSetIsBusy } from "../../state/app";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -23,8 +23,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
   const [cookies, , deleteAuthToken] = useCookies(["auth"]);
   const fetchWithAuth = useFetchWithAuth();
-  const { setIsBusy } = useAppState();
-
+  const setIsBusy = useSetIsBusy();
   const handleLogout = useCallback(() => {
     deleteAuthToken("auth");
     setUser(null);

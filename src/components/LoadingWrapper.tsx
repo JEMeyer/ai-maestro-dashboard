@@ -1,4 +1,4 @@
-import { useAppState } from "../hooks/useAppState";
+import { useIsBusy } from "../state/app";
 import Loading from "./Loading";
 
 interface LoadingWrapperProps {
@@ -6,7 +6,7 @@ interface LoadingWrapperProps {
 }
 
 const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
-  const { isBusy } = useAppState();
+  const isBusy = useIsBusy();
 
   return (
     <>
