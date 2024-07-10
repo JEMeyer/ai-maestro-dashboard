@@ -46,6 +46,7 @@ const useGpuLockStatus = () => {
     });
     eventSource.onmessage = (event) => {
       const rawData = JSON.parse(event.data);
+      console.log(`[${new Date().toISOString()}] Received event: `, rawData);
 
       // Transform the event data
       const transformedData: Data = Object.entries(rawData).reduce(
