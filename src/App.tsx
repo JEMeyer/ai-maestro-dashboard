@@ -7,7 +7,7 @@ import LoadingWrapper from "./components/Core/LoadingWrapper";
 import { RecoilRoot } from "recoil";
 import { CookiesProvider } from "react-cookie";
 import Header from "./components/Header/Header";
-import ConfigEditor from "./components/ConfigEditor";
+import ConfigurationEditor from "./components/ConfigurationEditor";
 import NotFound from "./components/Pages/NotFound";
 import About from "./components/Header/About";
 import Contact from "./components/Header/Contact";
@@ -24,8 +24,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/callback" element={<Callback />} />
               <Route
-                path="/config"
-                element={<PrivateRoute element={<ConfigEditor />} />}
+                path="/configuration"
+                element={<PrivateRoute element={<ConfigurationEditor />} />}
               />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />

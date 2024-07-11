@@ -61,7 +61,7 @@ const Callback: React.FC = () => {
   // Wait until the auth is actually updated to redirect to /dashboard
   useEffect(() => {
     if (user != null) {
-      navigate("/config");
+      navigate("/configuration");
     }
   }, [user, navigate]);
 

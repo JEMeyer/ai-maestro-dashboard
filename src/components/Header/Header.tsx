@@ -142,7 +142,7 @@ const Header: React.FC = () => {
         <NavLink to="/" onClick={() => setIsMenuOpen(false)}>
           Home
         </NavLink>
-        <NavLink to="/config" onClick={() => setIsMenuOpen(false)}>
+        <NavLink to="/configuration" onClick={() => setIsMenuOpen(false)}>
           Config Editor
         </NavLink>
         <NavLink to="/about" onClick={() => setIsMenuOpen(false)}>

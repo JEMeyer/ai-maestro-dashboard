@@ -2,7 +2,7 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import useDragHandlers from "../hooks/useDragEndHandler";
 import { ConfigurationVisualizer } from "./Config/ConfigurationVisualizer";
 
-const ConfigEditor = () => {
+const ConfigurationEditor = () => {
   const handleDragEnd = useDragHandlers();
 
   return (
@@ -12,4 +12,4 @@ const ConfigEditor = () => {
   );
 };
 
-export default ConfigEditor;
+export default ConfigurationEditor;
