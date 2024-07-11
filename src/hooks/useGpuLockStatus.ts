@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useEnvironmentVariables } from "../state/env";
+import { useEnvironmentVariables } from "./useEnvironmentVariables";
 
 interface GpuStatus {
   ModelInUse: string;

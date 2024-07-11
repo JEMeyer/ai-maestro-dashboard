@@ -3,7 +3,7 @@ import { useSetIsBusy, useSetUser, useUserValue } from "../state/app";
 import { useFetchWithAuth } from "./useFetchWithAuth";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
-import { useEnvironmentVariables } from "../state/env";
+import { useEnvironmentVariables } from "./useEnvironmentVariables";
 
 export const useAuth = () => {
   const user = useUserValue();

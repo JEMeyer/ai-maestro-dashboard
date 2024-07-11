@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { TableNames } from "../types";
-import { useEnvironmentVariables } from "../state/env";
+import { useEnvironmentVariables } from "../hooks/useEnvironmentVariables";
 
 export const useGetAllModels = <T>() => {
   const { API_BASE_URL } = useEnvironmentVariables();

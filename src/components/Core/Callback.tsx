@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { useEnvironmentVariables } from "../../state/env";
+import { useEnvironmentVariables } from "../../hooks/useEnvironmentVariables";
 import { useSetIsBusy, useUserValue } from "../../state/app";
 
 const Callback: React.FC = () => {
