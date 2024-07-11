@@ -1,5 +1,5 @@
 import { atom, useRecoilState } from "recoil";
-import { Assignment } from "../types/database";
+import { Assignment } from "../types";
 import { useFetchAllModelTypes } from "../services/database";
 import { useEffect, useMemo } from "react";
 

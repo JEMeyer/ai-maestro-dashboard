@@ -1,6 +1,6 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { Navigate } from "react-router-dom";
+import { useUserValue } from "../../state/app";
 
 interface PrivateRouteProps {
   element: React.ReactElement;
@@ -11,9 +11,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   element,
   requiredRole,
 }) => {
-  const { user } = useAuth();
-  const location = useLocation();
-
+  const user = useUserValue();
   // Wait for user to load
   if (user === undefined) return <></>;
 

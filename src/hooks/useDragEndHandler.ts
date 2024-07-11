@@ -1,6 +1,6 @@
 import { DropResult } from "@hello-pangea/dnd";
-import { useAllModels } from "../state/models";
-import { getModelId } from "../types/database";
+import { useSetModels } from "../state/models";
+import { getModelId } from "../types";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Item {
@@ -10,7 +10,7 @@ interface Item {
 }
 
 const useDragEndHandler = () => {
-  const { setModels } = useAllModels();
+  const setModels = useSetModels();
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;

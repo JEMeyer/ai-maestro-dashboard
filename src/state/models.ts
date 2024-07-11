@@ -1,5 +1,5 @@
-import { atom, useRecoilState } from "recoil";
-import { Model } from "../types/database";
+import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { Model } from "../types";
 import { useFetchAllModelTypes } from "../services/database";
 import { useEffect, useMemo } from "react";
 
@@ -8,13 +8,14 @@ const allModelsAtom = atom<Model[] | null>({
   default: null,
 });
 
-export const useAllModels = () => {
-  const [models, setModels] = useRecoilState(allModelsAtom);
+// TODO remove this when separate 'db' and 'local' stores setup for computers/models/etc
+export const useSetModels = () => {
+  const setModels = useSetRecoilState(allModelsAtom);
 
-  return { models, setModels };
+  return setModels;
 };
 
-export const useAllModelByType = () => {
+export const useAllModelsGroupedByType = () => {
   const [models, setModels] = useRecoilState(allModelsAtom);
   const fetchAllModels = useFetchAllModelTypes<Model>("models");
 

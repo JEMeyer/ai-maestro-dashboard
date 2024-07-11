@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import useGpuLockStatus from "../hooks/useGpuLockStatus";
-import Loading from "./Loading";
+import { useSetIsBusy } from "../state/app";
 
 const Container = styled.div`
   padding: 20px;
@@ -28,8 +28,17 @@ const StatusCard = styled.div<{ $isLocked: boolean }>`
 
 const GpuLockGrid: React.FC = () => {
   const { data } = useGpuLockStatus();
+  const setIsBusy = useSetIsBusy();
 
-  if (data == null) return <Loading />;
+  useEffect(() => {
+    if (data == null) {
+      setIsBusy(true);
+    } else {
+      setIsBusy(false);
+    }
+  }, [data, setIsBusy]);
+
+  if (data == null) return <></>;
 
   return (
     <Container>

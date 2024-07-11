@@ -1,5 +1,5 @@
 import React from "react";
-import { getModelId, Model } from "../../types/database";
+import { getModelId, Model } from "../../types";
 import styled from "styled-components";
 import { Draggable } from "@hello-pangea/dnd";
 

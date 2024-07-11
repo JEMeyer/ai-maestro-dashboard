@@ -1,16 +1,20 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { useConfig } from "../hooks/useConfig";
-import { useAuth } from "../hooks/useAuth";
-import Loading from "./Loading";
+import { useEnvironmentVariables } from "../../state/env";
+import { useSetIsBusy, useUserValue } from "../../state/app";
 
 const Callback: React.FC = () => {
   const [, setCookie] = useCookies(["auth"]);
-  const { user } = useAuth();
+  const user = useUserValue();
   const location = useLocation();
   const navigate = useNavigate();
-  const { OAUTH_URL, OAUTH_CLIENT_ID } = useConfig();
+  const { OAUTH_URL, OAUTH_CLIENT_ID } = useEnvironmentVariables();
+  const setIsBusy = useSetIsBusy();
+
+  useEffect(() => {
+    setIsBusy(true);
+  }, [setIsBusy]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -61,7 +65,7 @@ const Callback: React.FC = () => {
     }
   }, [user, navigate]);
 
-  return <Loading />;
+  return <></>;
 };
 
 export default Callback;

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { getGpuId, GPU as GPUType } from "../../types/database";
+import { getGpuId, GPU as GPUType } from "../../types";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 
 const Container = styled.div<{ $isDragging: boolean }>`

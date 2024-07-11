@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { ModelItem } from "./ModelItem";
-import { useAllModelByType } from "../../state/models";
+import { useAllModelsGroupedByType } from "../../state/models";
 import styled from "styled-components";
 import { Droppable } from "@hello-pangea/dnd";
-import { getModelId } from "../../types/database";
+import { getModelId } from "../../types";
 
 const Container = styled.div`
   margin: 8px;
@@ -38,7 +38,7 @@ const Arrow = styled.span<{ $isCollapsed: boolean }>`
 `;
 
 export const ModelList: React.FC = () => {
-  const { llms, diffusors, speechModels } = useAllModelByType();
+  const { llms, diffusors, speechModels } = useAllModelsGroupedByType();
   const [isLLMsCollapsed, setIsLLMsCollapsed] = useState(false);
   const [isDiffusorsCollapsed, setIsDiffusorsCollapsed] = useState(false);
   const [isSpeechModelsCollapsed, setIsSpeechModelsCollapsed] = useState(false);

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { useAuth } from "../hooks/useAuth";
-import { useSetIsBusy } from "../state/app";
+import { useAuth } from "../../hooks/useAuth";
+import { useSetIsBusy, useUserValue } from "../../state/app";
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -125,7 +125,8 @@ const Button = styled.button`
 `;
 
 const Header: React.FC = () => {
-  const { handleLogin, handleLogout, user } = useAuth();
+  const user = useUserValue();
+  const { handleLogin, handleLogout } = useAuth();
   const setIsBusy = useSetIsBusy();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

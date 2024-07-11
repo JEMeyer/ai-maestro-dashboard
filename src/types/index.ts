@@ -1,2 +1,2 @@
-export * from "./UserDetails";
+export * from "./database";
 export * from "./authTypes";

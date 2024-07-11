@@ -1,5 +1,5 @@
 import { DragDropContext } from "@hello-pangea/dnd";
-import { ConfigurationVisualizer } from "./config/ConfigurationVisualizer";
+import { ConfigurationVisualizer } from "./Config/ConfigurationVisualizer";
 import useDragHandlers from "../hooks/useDragEndHandler";
 
 const ConfigEditor = () => {

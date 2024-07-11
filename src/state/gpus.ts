@@ -1,5 +1,5 @@
 import { atom, useRecoilState } from "recoil";
-import { GPU } from "../types/database";
+import { GPU } from "../types";
 import { useFetchAllModelTypes } from "../services/database";
 import { useEffect } from "react";
 

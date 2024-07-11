@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useConfig } from "./useConfig";
+import { useEnvironmentVariables } from "../state/env";
 
 interface GpuStatus {
   ModelInUse: string;
@@ -10,7 +10,7 @@ interface Data {
 }
 
 const useGpuLockStatus = () => {
-  const { API_BASE_URL } = useConfig();
+  const { API_BASE_URL } = useEnvironmentVariables();
   const [data, setData] = useState<Data | null>(null);
 
   useEffect(() => {
