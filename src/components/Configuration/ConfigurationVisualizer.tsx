@@ -1,5 +1,5 @@
 import React from "react";
-import { ComputerList } from "./ComputerList";
+import { ComputerList } from "./Computer/ComputerList";
 import { ModelList } from "./ModelList";
 import styled from "styled-components";
 

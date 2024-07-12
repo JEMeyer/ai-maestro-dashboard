@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { Droppable } from "@hello-pangea/dnd";
-import { useAllComputers } from "../../state/computers";
-import { useAllGpus } from "../../state/gpus";
-import { GPUList } from "./GPUList";
+import { useAllComputers } from "../../../state/computers";
+import { useAllGpus } from "../../../state/gpus";
+import { GPUList } from "../GPUList";
 
 const Container = styled.div`
   margin: 8px;
