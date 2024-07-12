@@ -3,7 +3,6 @@ import { ModelItem } from "./ModelItem";
 import { useAllModelsGroupedByType } from "../../state/models";
 import styled from "styled-components";
 import { Droppable } from "@hello-pangea/dnd";
-import { getModelId } from "../../types";
 
 const Container = styled.div`
   margin: 8px;
@@ -64,7 +63,7 @@ export const ModelList: React.FC = () => {
             >
               {llms!.map((model, index) => (
                 <ModelItem
-                  key={getModelId(model, index)}
+                  key={`llm_${model.name}`}
                   model={model}
                   index={index}
                 />
@@ -90,7 +89,7 @@ export const ModelList: React.FC = () => {
             >
               {diffusors!.map((model, index) => (
                 <ModelItem
-                  key={getModelId(model, index)}
+                  key={`diffusor_${model.name}`}
                   model={model}
                   index={index}
                 />
@@ -118,7 +117,7 @@ export const ModelList: React.FC = () => {
             >
               {speechModels!.map((model, index) => (
                 <ModelItem
-                  key={getModelId(model, index)}
+                  key={`speechModel_${model.name}`}
                   model={model}
                   index={index}
                 />

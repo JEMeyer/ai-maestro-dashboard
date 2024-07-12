@@ -7,11 +7,11 @@ import LoadingWrapper from "./components/Core/LoadingWrapper";
 import { RecoilRoot } from "recoil";
 import { CookiesProvider } from "react-cookie";
 import Header from "./components/Header/Header";
-import ConfigurationEditor from "./components/ConfigurationEditor";
 import NotFound from "./components/Pages/NotFound";
 import About from "./components/Header/About";
 import Contact from "./components/Header/Contact";
 import Unauthenticated from "./components/Pages/Unauthenticated";
+import { ConfigurationVisualizer } from "./components/Configuration/ConfigurationVisualizer";
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
               <Route path="/callback" element={<Callback />} />
               <Route
                 path="/configuration"
-                element={<PrivateRoute element={<ConfigurationEditor />} />}
+                element={<PrivateRoute element={<ConfigurationVisualizer />} />}
               />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />

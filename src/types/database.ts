@@ -1,50 +1,30 @@
 interface BaseItem {
-  id: string;
+  id: number;
   name: string;
+  display_order: number;
 }
 
 export type TableNames = "computers" | "models" | "gpus" | "assignments";
 
 type ModelType = "llm" | "diffusor" | "stt" | "tts";
-export interface Model extends BaseItem {
+export interface Model extends Omit<BaseItem, "id"> {
   size: number;
   model_type: ModelType;
 }
 
-export function getModelId(
-  model: Pick<Model, "id" | "name" | "size">,
-  index: number
-): string {
-  return model.id ?? `${model.name}-${model.size}_${index}`;
-}
-
-export function getComputerlId(
-  model: Pick<Computer, "id" | "name">,
-  index: number
-): string {
-  return model.id ?? `${model.name}_${index}`;
-}
-
-export function getGpuId(
-  gpu: Pick<GPU, "id" | "name" | "vram_size">,
-  index: number
-): string {
-  return `${gpu.id}-${gpu.name}-${gpu.vram_size}_${index}`;
-}
-
 export interface GPU extends BaseItem {
   vram_size: number;
-  computer_id: string;
+  computer_id: number;
   weight?: number;
 }
 
 export interface Computer extends BaseItem {
-  edge_server_port: string;
+  edge_server_port: number;
   ip_addr: string;
 }
 
 export interface Assignment extends BaseItem {
   model_name: string;
-  gpu_ids: string[];
+  gpuIds: number[];
   port: number;
 }

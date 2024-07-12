@@ -17,7 +17,15 @@ export const useAllGpus = () => {
       if (gpus == null) {
         try {
           const data = await fetchAllModels();
-          setGpus(data);
+          setGpus(
+            data.map((gpu) => {
+              return {
+                ...gpu,
+                vram_size: Number(gpu.vram_size),
+                weight: Number(gpu.weight),
+              };
+            })
+          );
         } catch (error) {
           console.error("Failed to fetch models:", error);
         }

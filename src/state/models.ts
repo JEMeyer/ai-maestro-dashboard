@@ -24,7 +24,14 @@ export const useAllModelsGroupedByType = () => {
       if (models == null) {
         try {
           const data = await fetchAllModels();
-          setModels(data);
+          setModels(
+            data.map((model) => {
+              return {
+                ...model,
+                size: Number(model.size),
+              };
+            })
+          );
         } catch (error) {
           console.error("Failed to fetch models:", error);
         }

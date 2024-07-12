@@ -10,7 +10,7 @@ const allAssignmentsAtom = atom<Assignment[] | null>({
 
 const useAllAssignments = () => {
   const [assignments, setAssignments] = useRecoilState(allAssignmentsAtom);
-  const fetchAllModels = useFetchAllModelTypes<Assignment>("gpus");
+  const fetchAllModels = useFetchAllModelTypes<Assignment>("assignments");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,12 +30,27 @@ const useAllAssignments = () => {
   return assignments;
 };
 
-export const useAssignmentsForGpus = (gpuIds: string[]) => {
+export const useAssignmentsForGpus = (gpuIds: number[]) => {
   const assignments = useAllAssignments();
 
   return useMemo(() => {
-    return assignments?.filter((assignment) =>
-      gpuIds.some((id) => assignment.gpu_ids.includes(id))
-    );
+    // Create a map to store the assignments for each GPU
+    const assignmentsByGpuId = new Map<number, Assignment[]>();
+
+    gpuIds.forEach((gpuId) => {
+      // Filter assignments that include the current GPU ID
+      const filteredAssignments = assignments?.filter((assignment) => {
+        return assignment.gpuIds.includes(gpuId);
+      });
+
+      if (filteredAssignments && filteredAssignments.length > 0) {
+        // Store the filtered assignments in the map, associated with the GPU ID
+        assignmentsByGpuId.set(gpuId, filteredAssignments);
+      } else {
+        assignmentsByGpuId.set(gpuId, []);
+      }
+    });
+
+    return assignmentsByGpuId;
   }, [assignments, gpuIds]);
 };

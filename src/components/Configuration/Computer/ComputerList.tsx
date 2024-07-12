@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Droppable } from "@hello-pangea/dnd";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { EditableTitle } from "./EditableTitle"; // Import the EditableTitle component
 import { useAllGpus } from "../../../state/gpus";
 import { useAllComputers } from "../../../state/computers";
 import { GPUList } from "./GPUList";
-import { DroppableIdPrefix } from "../../../types/draggable";
+import { DraggableIdPrefix, DroppableIdPrefix } from "../../../types/draggable";
+import { List } from "../../UI/List";
 
 const Container = styled.div`
   margin: 8px;
@@ -26,12 +27,6 @@ const TitleContainer = styled.div`
   border-radius: 2px 2px 0 0;
 `;
 
-const List = styled.div<{ $isDraggingOver: boolean }>`
-  padding: 8px;
-  transition: background-color 0.3s ease;
-  background-color: ${(props) => (props.$isDraggingOver ? "skyblue" : "white")};
-`;
-
 export const ComputerList: React.FC = () => {
   const computers = useAllComputers();
   const gpus = useAllGpus();
@@ -39,7 +34,7 @@ export const ComputerList: React.FC = () => {
     {}
   );
 
-  const handleNameChange = (id: string, newName: string) => {
+  const handleNameChange = (id: number, newName: string) => {
     setComputerNames((prev) => ({
       ...prev,
       [id]: newName,
@@ -53,33 +48,48 @@ export const ComputerList: React.FC = () => {
 
   return (
     <>
-      {computers.map((computer) => (
-        <Container key={computer.name + computer.ip_addr}>
-          <TitleContainer>
-            <EditableTitle
-              name={computerNames[computer.id] || computer.name}
-              onNameChange={(newName) => handleNameChange(computer.id, newName)}
-            />
-          </TitleContainer>
-          <Droppable
-            droppableId={DroppableIdPrefix.COMPUTER_LIST + computer.id}
-          >
-            {(provided, snapshot) => (
-              <List
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                $isDraggingOver={snapshot.isDraggingOver}
-              >
-                <GPUList
-                  gpus={gpus.filter(
-                    ({ computer_id }) => computer.id === computer_id
-                  )}
+      {computers.map((computer, index) => (
+        <Draggable
+          key={DraggableIdPrefix.COMPUTER + computer.id}
+          draggableId={DraggableIdPrefix.COMPUTER + computer.id}
+          index={index}
+        >
+          {(provided) => (
+            <Container
+              key={computer.name + computer.ip_addr}
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+            >
+              <TitleContainer>
+                <EditableTitle
+                  name={computerNames[computer.id] || computer.name}
+                  onNameChange={(newName) =>
+                    handleNameChange(computer.id, newName)
+                  }
                 />
-                {provided.placeholder}
-              </List>
-            )}
-          </Droppable>
-        </Container>
+              </TitleContainer>
+              <Droppable
+                droppableId={DroppableIdPrefix.COMPUTER_LIST + computer.id}
+              >
+                {(provided, snapshot) => (
+                  <List
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    $isDraggingOver={snapshot.isDraggingOver}
+                  >
+                    <GPUList
+                      gpus={gpus.filter(
+                        ({ computer_id }) => computer.id === computer_id
+                      )}
+                    />
+                    {provided.placeholder}
+                  </List>
+                )}
+              </Droppable>
+            </Container>
+          )}
+        </Draggable>
       ))}
     </>
   );

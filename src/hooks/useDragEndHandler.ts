@@ -1,6 +1,5 @@
 import { DropResult } from "@hello-pangea/dnd";
 import { useSetModels } from "../state/models";
-import { getModelId } from "../types";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Item {
@@ -28,9 +27,7 @@ const useDragEndHandler = () => {
     setModels((prev) => {
       if (prev == null) return prev;
 
-      const sourceIndex = prev.findIndex(
-        (model) => getModelId(model, source.index) === draggableId
-      );
+      const sourceIndex = prev.findIndex((model) => model.name === draggableId);
       const indexDelta = source.index - destination.index;
       const destinationIndex = sourceIndex - indexDelta;
 

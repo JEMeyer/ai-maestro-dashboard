@@ -1,7 +1,8 @@
 import React from "react";
-import { getModelId, Model } from "../../types";
+import { Model } from "../../types";
 import styled from "styled-components";
 import { Draggable } from "@hello-pangea/dnd";
+import { DraggableIdPrefix } from "../../types/draggable";
 
 const Container = styled.div<{ $isDragging: boolean }>`
   border: 1px solid lightgray;
@@ -18,7 +19,7 @@ type Props = {
 
 export const ModelItem: React.FC<Props> = ({ model, index }) => {
   return (
-    <Draggable draggableId={getModelId(model, index)} index={index}>
+    <Draggable draggableId={DraggableIdPrefix.MODEL + model.name} index={index}>
       {(provided, snapshot) => (
         <Container
           {...provided.draggableProps}
