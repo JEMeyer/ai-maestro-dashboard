@@ -1,9 +1,9 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useUserValue } from "../../state/app";
 
 interface PrivateRouteProps {
-  element: React.ReactElement;
+  element: JSX.Element;
   requiredRole?: string;
 }
 
@@ -12,15 +12,19 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   requiredRole,
 }) => {
   const user = useUserValue();
+  const location = useLocation();
+
   // Wait for user to load
   if (user === undefined) return <></>;
 
   if (user === null) {
-    return <Navigate to="/unauthenticated" state={{ from: location }} />;
+    return (
+      <Navigate to="/unauthenticated" state={{ from: location.pathname }} />
+    );
   }
 
   if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to="/unauthorized" state={{ from: location }} />;
+    return <Navigate to="/unauthorized" state={{ from: location.pathname }} />;
   }
 
   return element;

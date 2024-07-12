@@ -1,5 +1,5 @@
 interface BaseItem {
-  id?: string;
+  id: string;
   name: string;
 }
 

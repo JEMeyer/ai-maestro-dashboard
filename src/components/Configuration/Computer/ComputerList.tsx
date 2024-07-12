@@ -1,36 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Droppable } from "@hello-pangea/dnd";
-import { useAllComputers } from "../../../state/computers";
+import { EditableTitle } from "./EditableTitle"; // Import the EditableTitle component
 import { useAllGpus } from "../../../state/gpus";
-import { GPUList } from "../GPUList";
+import { useAllComputers } from "../../../state/computers";
+import { GPUList } from "./GPUList";
+import { DroppableIdPrefix } from "../../../types/draggable";
 
 const Container = styled.div`
   margin: 8px;
   border: 1px solid lightgray;
   border-radius: 2px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
-const Title = styled.h3`
+const TitleContainer = styled.div`
   padding: 8px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #eaeaea;
+  border-bottom: 1px solid lightgray;
+  border-radius: 2px 2px 0 0;
 `;
 
 const List = styled.div<{ $isDraggingOver: boolean }>`
   padding: 8px;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  flex: 1 0 auto; // grow up to its maximum content width
-  max-width: 450px;
+  transition: background-color 0.3s ease;
   background-color: ${(props) => (props.$isDraggingOver ? "skyblue" : "white")};
 `;
 
 export const ComputerList: React.FC = () => {
   const computers = useAllComputers();
   const gpus = useAllGpus();
+  const [computerNames, setComputerNames] = useState<{ [key: string]: string }>(
+    {}
+  );
+
+  const handleNameChange = (id: string, newName: string) => {
+    setComputerNames((prev) => ({
+      ...prev,
+      [id]: newName,
+    }));
+    // Here you might want to call an API to update the computer name in the backend
+  };
 
   if (computers == null || gpus == null) {
     return <span>Loading computers...</span>;
@@ -39,9 +54,16 @@ export const ComputerList: React.FC = () => {
   return (
     <>
       {computers.map((computer) => (
-        <Container key={computer.id ?? computer.name + computer.ip_addr}>
-          <Title>{computer.name}</Title>
-          <Droppable droppableId={`computer_${computer.name}_${computer.id}`}>
+        <Container key={computer.name + computer.ip_addr}>
+          <TitleContainer>
+            <EditableTitle
+              name={computerNames[computer.id] || computer.name}
+              onNameChange={(newName) => handleNameChange(computer.id, newName)}
+            />
+          </TitleContainer>
+          <Droppable
+            droppableId={DroppableIdPrefix.COMPUTER_LIST + computer.id}
+          >
             {(provided, snapshot) => (
               <List
                 ref={provided.innerRef}
