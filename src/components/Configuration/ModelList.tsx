@@ -3,6 +3,7 @@ import { ModelItem } from "./ModelItem";
 import { useAllModelsGroupedByType } from "../../state/models";
 import styled from "styled-components";
 import { Droppable } from "@hello-pangea/dnd";
+import { DroppableType } from "../../types/draggable";
 
 const Container = styled.div`
   margin: 8px;
@@ -53,7 +54,7 @@ export const ModelList: React.FC = () => {
           LLMs
           <Arrow $isCollapsed={isLLMsCollapsed}>▼</Arrow>
         </Title>
-        <Droppable droppableId={"llm_list"}>
+        <Droppable droppableId={"llm_list"} type={DroppableType.MODEL}>
           {(provided, snapshot) => (
             <List
               ref={provided.innerRef}
@@ -79,7 +80,7 @@ export const ModelList: React.FC = () => {
           Image Generators
           <Arrow $isCollapsed={isDiffusorsCollapsed}>▼</Arrow>
         </Title>
-        <Droppable droppableId={"diffusor_list"}>
+        <Droppable droppableId={"diffusor_list"} type={DroppableType.MODEL}>
           {(provided, snapshot) => (
             <List
               ref={provided.innerRef}
@@ -107,7 +108,7 @@ export const ModelList: React.FC = () => {
           Speech Models
           <Arrow $isCollapsed={isSpeechModelsCollapsed}>▼</Arrow>
         </Title>
-        <Droppable droppableId={"speech_model_list"}>
+        <Droppable droppableId={"speech_model_list"} type={DroppableType.MODEL}>
           {(provided, snapshot) => (
             <List
               ref={provided.innerRef}

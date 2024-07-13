@@ -1,3 +1,10 @@
+export enum DroppableType {
+  COMPUTER = "computer_list",
+  GPU = "gpu_list",
+  MODEL = "model_list",
+  ASSIGNMENT = "assignment_list",
+}
+
 export enum DraggableIdPrefix {
   GPU = "draggable_gpu_",
   COMPUTER = "draggable_computer_",

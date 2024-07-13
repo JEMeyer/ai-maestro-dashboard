@@ -1,10 +1,11 @@
-import { DropResult } from "@hello-pangea/dnd";
+import { Draggable, DropResult } from "@hello-pangea/dnd";
 import { useSetModels } from "../state/models";
+import { DroppableType } from "../types/draggable";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Item {
   id: string;
-  type: "computer" | "gpu" | "model";
+  type: DroppableType;
   content: string;
 }
 
@@ -12,7 +13,7 @@ const useDragEndHandler = () => {
   const setModels = useSetModels();
 
   const handleDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId } = result;
+    const { destination, source, type } = result;
 
     // Dropped outside list
     if (!destination) return;
@@ -24,6 +25,30 @@ const useDragEndHandler = () => {
     )
       return;
 
+    // Find out what action needs to be taken
+    switch (type) {
+      case DroppableType.COMPUTER:
+      case DroppableType.GPU:
+      case DroppableType.ASSIGNMENT:
+        reorderItems(source.index, destination.index);
+        break;
+      case DroppableType.MODEL:
+        performModelAction(draggedItem);
+        break;
+      default:
+        break;
+    }
+  };
+
+  //   const reorderItems = (startIndex: number, endIndex: number) => {
+  //     const newItems = Array.from(items);
+  //     const [movedItem] = newItems.splice(startIndex, 1);
+  //     newItems.splice(endIndex, 0, movedItem);
+
+  //     setItems(newItems);
+  //   };
+
+  const reorderItem = (result: DropResult) => {
     setModels((prev) => {
       if (prev == null) return prev;
 
@@ -38,30 +63,11 @@ const useDragEndHandler = () => {
     });
   };
 
-  //   switch (draggedItem.type) {
-  //     case "computer":
-  //     case "gpu":
-  //       reorderItems(source.index, destination.index);
-  //       break;
-  //     case "model":
-  //       performModelAction(draggedItem);
-  //       break;
-  //     default:
-  //       break;
-
-  //   const reorderItems = (startIndex: number, endIndex: number) => {
-  //     const newItems = Array.from(items);
-  //     const [movedItem] = newItems.splice(startIndex, 1);
-  //     newItems.splice(endIndex, 0, movedItem);
-
-  //     setItems(newItems);
-  //   };
-
-  //   const performModelAction = (item: Item) => {
-  //     // Stub for performing an action when a model is dragged and dropped
-  //     console.log(`Performing action for model: ${item.content}`);
-  //     // Add your custom logic here
-  //   };
+  const performModelAction = (result: DropResult) => {
+    // Stub for performing an action when a model is dragged and dropped
+    console.log(`Performing action for model: ${item.content}`);
+    // Add your custom logic here
+  };
 
   return handleDragEnd;
 };

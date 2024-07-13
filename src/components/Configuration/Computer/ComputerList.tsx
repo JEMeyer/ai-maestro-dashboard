@@ -5,7 +5,11 @@ import { EditableTitle } from "./EditableTitle"; // Import the EditableTitle com
 import { useAllGpus } from "../../../state/gpus";
 import { useAllComputers } from "../../../state/computers";
 import { GPUList } from "./GPUList";
-import { DraggableIdPrefix, DroppableIdPrefix } from "../../../types/draggable";
+import {
+  DraggableIdPrefix,
+  DroppableIdPrefix,
+  DroppableType,
+} from "../../../types/draggable";
 import { List } from "../../UI/List";
 
 const Container = styled.div`
@@ -70,6 +74,7 @@ export const ComputerList: React.FC = () => {
                 />
               </TitleContainer>
               <Droppable
+                type={DroppableType.GPU}
                 droppableId={DroppableIdPrefix.COMPUTER_LIST + computer.id}
               >
                 {(provided, snapshot) => (

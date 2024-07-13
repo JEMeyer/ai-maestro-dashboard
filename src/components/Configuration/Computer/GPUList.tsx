@@ -2,7 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { GPU } from "../../../types";
-import { DraggableIdPrefix, DroppableIdPrefix } from "../../../types/draggable";
+import {
+  DraggableIdPrefix,
+  DroppableIdPrefix,
+  DroppableType,
+} from "../../../types/draggable";
 import { List } from "../../UI/List";
 import { AssignedModelsList } from "./AssignedModelsList";
 import { useAssignmentsForGpus } from "../../../state/assignment";
@@ -40,6 +44,7 @@ export const GPUList: React.FC<{ gpus: GPU[] }> = ({ gpus }) => {
             >
               <GPUName>{gpu.name}</GPUName>
               <Droppable
+                type={DroppableType.ASSIGNMENT}
                 droppableId={DroppableIdPrefix.ASSIGNMENT_LIST + gpu.id}
               >
                 {(provided, snapshot) => (
