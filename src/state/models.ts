@@ -1,57 +1,97 @@
-import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { atom, selectorFamily, useRecoilState } from "recoil";
 import { Model } from "../types";
-import { useFetchAllModelTypes } from "../services/database";
-import { useEffect, useMemo } from "react";
+import { useDeleteAPIModel, useGetAllAPIModels } from "../services/apiService";
+import { useEffect } from "react";
 
-const allModelsAtom = atom<Model[] | null>({
-  key: "allModelsAtom",
-  default: null,
+export const llmsAtom = atom<Model[] | undefined>({
+  key: "llmsAtom",
+  default: undefined,
 });
 
-// TODO remove this when separate 'db' and 'local' stores setup for computers/models/etc
-export const useSetModels = () => {
-  const setModels = useSetRecoilState(allModelsAtom);
+export const modelsSelectorFamily = selectorFamily({
+  key: "modelsSelectorFamily",
+  get:
+    (modelType: ModelType) =>
+    ({ get }) => {
+      const allModels = get(modelsAtom);
+      return allModels[modelType];
+    },
+});
 
-  return setModels;
-};
+export const diffusorsAtom = atom<Model[] | undefined>({
+  key: "diffusorsAtom",
+  default: undefined,
+});
 
-export const useAllModelsGroupedByType = () => {
-  const [models, setModels] = useRecoilState(allModelsAtom);
-  const fetchAllModels = useFetchAllModelTypes<Model>("models");
+export const sttsAtom = atom<Model[] | undefined>({
+  key: "sttsAtom",
+  default: undefined,
+});
+
+export const ttssAtom = atom<Model[] | undefined>({
+  key: "ttssAtom",
+  default: undefined,
+});
+
+export const useLlms = () => {
+  const [llms, setLlms] = useRecoilState(llmsAtom);
+  const fetchAllModels = useGetAllAPIModels<Model>();
 
   useEffect(() => {
     const fetchData = async () => {
-      if (models == null) {
+      if (llms === null) {
         try {
-          const data = await fetchAllModels();
-          setModels(
-            data.map((model) => {
-              return {
-                ...model,
-                size: Number(model.size),
-              };
-            })
-          );
+          const data = await fetchAllModels("models");
+          setLlms(data);
         } catch (error) {
-          console.error("Failed to fetch models:", error);
+          console.error("Failed to fetch LLM models:", error);
         }
       }
     };
 
     fetchData();
-  }, [models, fetchAllModels, setModels]);
+  }, [fetchAllModels, llms, setLlms]);
 
-  const state = useMemo(() => {
-    const llms = models?.filter((model) => model.model_type === "llm");
-    const diffusors = models?.filter(
-      (model) => model.model_type === "diffusor"
-    );
-    const speechModels = models?.filter(
-      (model) => model.model_type === "stt" || model.model_type === "tts"
-    );
+  const addLlm = async (newLlm: Model) => {
+    try {
+      const createdLlm = await createModel("llms", newLlm);
+      setLlms((prev) => (prev ? [...prev, createdLlm] : [createdLlm]));
+    } catch (error) {
+      console.error("Failed to create LLM model:", error);
+    }
+  };
 
-    return { llms, diffusors, speechModels };
-  }, [models]);
+  const updateLlm = async (updatedLlm: Model) => {
+    try {
+      const updated = await updateModel("llms", updatedLlm);
+      setLlms((prev) =>
+        prev?.map((llm) => (llm.id === updated.id ? updated : llm))
+      );
+    } catch (error) {
+      console.error("Failed to update LLM model:", error);
+    }
+  };
 
-  return state;
+  const deleteLlm = async (id: number) => {
+    const deleteAPIModel = useDeleteAPIModel();
+    try {
+      await deleteAPIModel("models", id);
+      setLlms((prev) => prev?.filter((llm) => llm.id !== id));
+    } catch (error) {
+      console.error("Failed to delete LLM model:", error);
+    }
+  };
+
+  const reorderLlms = async (newOrder: Model[]) => {
+    setLlms(newOrder); // Optimistic update
+
+    try {
+      await bulkUpdateModels("llms", newOrder);
+    } catch (error) {
+      console.error("Failed to reorder LLM models:", error);
+      // Optionally, rollback optimistic update
+    }
+  };
+
+  return { llms, addLlm, updateLlm, deleteLlm, reorderLlms };
 };

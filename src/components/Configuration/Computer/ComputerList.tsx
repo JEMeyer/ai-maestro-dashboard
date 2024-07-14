@@ -75,7 +75,7 @@ export const ComputerList: React.FC = () => {
               </TitleContainer>
               <Droppable
                 type={DroppableType.GPU}
-                droppableId={DroppableIdPrefix.COMPUTER_LIST + computer.id}
+                droppableId={DroppableIdPrefix.GPU_LIST + computer.id}
               >
                 {(provided, snapshot) => (
                   <List

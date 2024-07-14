@@ -1,4 +1,4 @@
-import { Draggable, DropResult } from "@hello-pangea/dnd";
+import { DropResult } from "@hello-pangea/dnd";
 import { useSetModels } from "../state/models";
 import { DroppableType } from "../types/draggable";
 
@@ -30,10 +30,10 @@ const useDragEndHandler = () => {
       case DroppableType.COMPUTER:
       case DroppableType.GPU:
       case DroppableType.ASSIGNMENT:
-        reorderItems(source.index, destination.index);
+        reorderItems(result);
         break;
       case DroppableType.MODEL:
-        performModelAction(draggedItem);
+        performModelAction(result);
         break;
       default:
         break;
@@ -46,26 +46,33 @@ const useDragEndHandler = () => {
   //     newItems.splice(endIndex, 0, movedItem);
 
   //     setItems(newItems);
-  //   };
 
-  const reorderItem = (result: DropResult) => {
+  const reorderItems = (result: DropResult) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { destination, source, type } = result;
+
+    switch (type) {
+      case DroppableType.COMPUTER:
+        setCom;
+    }
+
     setModels((prev) => {
       if (prev == null) return prev;
 
-      const sourceIndex = prev.findIndex((model) => model.name === draggableId);
-      const indexDelta = source.index - destination.index;
-      const destinationIndex = sourceIndex - indexDelta;
+      // const sourceIndex = prev.findIndex((model) => model.name === draggableId);
+      // const indexDelta = source.index - destination.index;
+      // const destinationIndex = sourceIndex - indexDelta;
 
       const updatedModels = [...prev];
-      const sourceElement = updatedModels.splice(sourceIndex, 1)[0];
-      updatedModels.splice(destinationIndex, 0, sourceElement);
+      // const sourceElement = updatedModels.splice(sourceIndex, 1)[0];
+      // updatedModels.splice(destinationIndex, 0, sourceElement);
       return updatedModels;
     });
   };
 
   const performModelAction = (result: DropResult) => {
     // Stub for performing an action when a model is dragged and dropped
-    console.log(`Performing action for model: ${item.content}`);
+    console.log(`Performing action for model: ${result}`);
     // Add your custom logic here
   };
 

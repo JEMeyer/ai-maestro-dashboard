@@ -3,7 +3,8 @@ import { ModelItem } from "./ModelItem";
 import { useAllModelsGroupedByType } from "../../state/models";
 import styled from "styled-components";
 import { Droppable } from "@hello-pangea/dnd";
-import { DroppableType } from "../../types/draggable";
+import { DroppableIdPrefix, DroppableType } from "../../types/draggable";
+import { CollapsibleList } from "../UI/List";
 
 const Container = styled.div`
   margin: 8px;
@@ -19,16 +20,6 @@ const Title = styled.h3`
   align-items: center;
 `;
 
-const List = styled.div<{ $isCollapsed: boolean; $isDraggingOver: boolean }>`
-  padding: 8px;
-  max-height: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "1000px")};
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  flex: 1 0 auto; // grow up to its maximum content width
-  max-width: 450px;
-  background-color: ${(props) => (props.$isDraggingOver ? "skyblue" : "white")};
-`;
-
 const Arrow = styled.span<{ $isCollapsed: boolean }>`
   display: inline-block;
   margin-left: 8px;
@@ -38,12 +29,17 @@ const Arrow = styled.span<{ $isCollapsed: boolean }>`
 `;
 
 export const ModelList: React.FC = () => {
-  const { llms, diffusors, speechModels } = useAllModelsGroupedByType();
+  const { llms, diffusors, sttModels, ttsModels } = useAllModelsGroupedByType();
   const [isLLMsCollapsed, setIsLLMsCollapsed] = useState(false);
   const [isDiffusorsCollapsed, setIsDiffusorsCollapsed] = useState(false);
   const [isSpeechModelsCollapsed, setIsSpeechModelsCollapsed] = useState(false);
 
-  if (llms == null || diffusors == null || speechModels == null) {
+  if (
+    llms == null ||
+    diffusors == null ||
+    sttModels == null ||
+    ttsModels == null
+  ) {
     return <span>Loading models...</span>;
   }
 
@@ -54,9 +50,12 @@ export const ModelList: React.FC = () => {
           LLMs
           <Arrow $isCollapsed={isLLMsCollapsed}>▼</Arrow>
         </Title>
-        <Droppable droppableId={"llm_list"} type={DroppableType.MODEL}>
+        <Droppable
+          droppableId={DroppableIdPrefix.LLM_LIST}
+          type={DroppableType.MODEL}
+        >
           {(provided, snapshot) => (
-            <List
+            <CollapsibleList
               ref={provided.innerRef}
               {...provided.droppableProps}
               $isCollapsed={isLLMsCollapsed}
@@ -70,7 +69,7 @@ export const ModelList: React.FC = () => {
                 />
               ))}
               {provided.placeholder}
-            </List>
+            </CollapsibleList>
           )}
         </Droppable>
       </Container>
@@ -80,9 +79,12 @@ export const ModelList: React.FC = () => {
           Image Generators
           <Arrow $isCollapsed={isDiffusorsCollapsed}>▼</Arrow>
         </Title>
-        <Droppable droppableId={"diffusor_list"} type={DroppableType.MODEL}>
+        <Droppable
+          droppableId={DroppableIdPrefix.DIFFUSOR_LIST}
+          type={DroppableType.MODEL}
+        >
           {(provided, snapshot) => (
-            <List
+            <CollapsibleList
               ref={provided.innerRef}
               {...provided.droppableProps}
               $isCollapsed={isDiffusorsCollapsed}
@@ -96,7 +98,7 @@ export const ModelList: React.FC = () => {
                 />
               ))}
               {provided.placeholder}
-            </List>
+            </CollapsibleList>
           )}
         </Droppable>
       </Container>
@@ -108,23 +110,57 @@ export const ModelList: React.FC = () => {
           Speech Models
           <Arrow $isCollapsed={isSpeechModelsCollapsed}>▼</Arrow>
         </Title>
-        <Droppable droppableId={"speech_model_list"} type={DroppableType.MODEL}>
+        <Droppable
+          droppableId={DroppableIdPrefix.STT_LIST}
+          type={DroppableType.MODEL}
+        >
           {(provided, snapshot) => (
-            <List
+            <CollapsibleList
               ref={provided.innerRef}
               {...provided.droppableProps}
               $isCollapsed={isSpeechModelsCollapsed}
               $isDraggingOver={snapshot.isDraggingOver}
             >
-              {speechModels!.map((model, index) => (
+              {sttModels!.map((model, index) => (
                 <ModelItem
-                  key={`speechModel_${model.name}`}
+                  key={`stt_${model.name}`}
                   model={model}
                   index={index}
                 />
               ))}
               {provided.placeholder}
-            </List>
+            </CollapsibleList>
+          )}
+        </Droppable>
+      </Container>
+
+      <Container>
+        <Title
+          onClick={() => setIsSpeechModelsCollapsed(!isSpeechModelsCollapsed)}
+        >
+          Speech Models
+          <Arrow $isCollapsed={isSpeechModelsCollapsed}>▼</Arrow>
+        </Title>
+        <Droppable
+          droppableId={DroppableIdPrefix.TTS_LIST}
+          type={DroppableType.MODEL}
+        >
+          {(provided, snapshot) => (
+            <CollapsibleList
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              $isCollapsed={isSpeechModelsCollapsed}
+              $isDraggingOver={snapshot.isDraggingOver}
+            >
+              {ttsModels!.map((model, index) => (
+                <ModelItem
+                  key={`tts_${model.name}`}
+                  model={model}
+                  index={index}
+                />
+              ))}
+              {provided.placeholder}
+            </CollapsibleList>
           )}
         </Droppable>
       </Container>

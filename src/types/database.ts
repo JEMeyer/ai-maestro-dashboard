@@ -6,8 +6,8 @@ interface BaseItem {
 
 export type TableNames = "computers" | "models" | "gpus" | "assignments";
 
-type ModelType = "llm" | "diffusor" | "stt" | "tts";
-export interface Model extends Omit<BaseItem, "id"> {
+export type ModelType = "llm" | "diffusor" | "stt" | "tts";
+export interface Model extends BaseItem {
   size: number;
   model_type: ModelType;
 }
