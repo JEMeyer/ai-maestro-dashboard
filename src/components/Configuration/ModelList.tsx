@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ModelItem } from "./ModelItem";
-import { useAllModelsGroupedByType } from "../../state/models";
 import styled from "styled-components";
 import { Droppable } from "@hello-pangea/dnd";
 import { DroppableIdPrefix, DroppableType } from "../../types/draggable";

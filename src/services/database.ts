@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { useGetAllAPIModels } from "./apiService";
-import { TableNames } from "../types";
+import { ApiEndpoints } from "../types";
 
-export const useFetchAllModelTypes = <T>(endpoint: TableNames) => {
+export const useFetchAllModelTypes = <T>(endpoint: ApiEndpoints) => {
   const getAllModels = useGetAllAPIModels<T>();
 
   return useCallback(async () => {

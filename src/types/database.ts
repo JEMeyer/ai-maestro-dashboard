@@ -4,7 +4,7 @@ interface BaseItem {
   display_order: number;
 }
 
-export type TableNames = "computers" | "models" | "gpus" | "assignments";
+export type ApiEndpoints = "computers" | "models" | "gpus" | "assignments";
 
 export type ModelType = "llm" | "diffusor" | "stt" | "tts";
 export interface Model extends BaseItem {

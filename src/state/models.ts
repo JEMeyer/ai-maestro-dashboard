@@ -1,70 +1,83 @@
-import { atom, selectorFamily, useRecoilState } from "recoil";
+import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil";
 import { Model } from "../types";
-import { useDeleteAPIModel, useGetAllAPIModels } from "../services/apiService";
-import { useEffect } from "react";
+import {
+  useDeleteAPIModel,
+  useGetAllAPIModels,
+  usePostAPIModel,
+  usePutAPIModel,
+} from "../services/apiService";
+import { useCallback } from "react";
 
-export const llmsAtom = atom<Model[] | undefined>({
+const modelsAtom = atom<Model[] | undefined>({
   key: "llmsAtom",
   default: undefined,
 });
 
-export const modelsSelectorFamily = selectorFamily({
-  key: "modelsSelectorFamily",
-  get:
-    (modelType: ModelType) =>
-    ({ get }) => {
-      const allModels = get(modelsAtom);
-      return allModels[modelType];
-    },
+const llmModelsSelector = selector<Model[] | undefined>({
+  key: "llmModelsSelector",
+  get: ({ get }) => {
+    const models = get(modelsAtom);
+    return models?.filter((model) => model.model_type === "llm");
+  },
 });
 
-export const diffusorsAtom = atom<Model[] | undefined>({
-  key: "diffusorsAtom",
-  default: undefined,
+const diffusorModelsSelector = selector<Model[] | undefined>({
+  key: "diffusorModelsSelector",
+  get: ({ get }) => {
+    const models = get(modelsAtom);
+    return models?.filter((model) => model.model_type === "diffusor");
+  },
 });
 
-export const sttsAtom = atom<Model[] | undefined>({
-  key: "sttsAtom",
-  default: undefined,
+const sttModelsSelector = selector<Model[] | undefined>({
+  key: "sttModelsSelector",
+  get: ({ get }) => {
+    const models = get(modelsAtom);
+    return models?.filter((model) => model.model_type === "stt");
+  },
 });
 
-export const ttssAtom = atom<Model[] | undefined>({
-  key: "ttssAtom",
-  default: undefined,
+const ttsModelsSelector = selector<Model[] | undefined>({
+  key: "ttsModelsSelector",
+  get: ({ get }) => {
+    const models = get(modelsAtom);
+    return models?.filter((model) => model.model_type === "tts");
+  },
 });
 
-export const useLlms = () => {
-  const [llms, setLlms] = useRecoilState(llmsAtom);
+export const useFetchAndSetAllModels = () => {
   const fetchAllModels = useGetAllAPIModels<Model>();
+  const setModels = useSetRecoilState(modelsAtom);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (llms === null) {
-        try {
-          const data = await fetchAllModels("models");
-          setLlms(data);
-        } catch (error) {
-          console.error("Failed to fetch LLM models:", error);
-        }
-      }
-    };
+  return useCallback(async () => {
+    const data = await fetchAllModels("models");
+    setModels(data);
+  }, [fetchAllModels, setModels]);
+};
 
-    fetchData();
-  }, [fetchAllModels, llms, setLlms]);
+export const useModels = () => {
+  const setModels = useSetRecoilState(modelsAtom);
+  const llms = useRecoilValue(llmModelsSelector);
+  const diffusors = useRecoilValue(diffusorModelsSelector);
+  const stts = useRecoilValue(sttModelsSelector);
+  const ttss = useRecoilValue(ttsModelsSelector);
+  const createAPIModel = usePostAPIModel<Model>();
+  const updateAPIModel = usePutAPIModel<Model>();
+  const deleteAPIModel = useDeleteAPIModel();
 
-  const addLlm = async (newLlm: Model) => {
+  const addModel = async (newModel: Model) => {
     try {
-      const createdLlm = await createModel("llms", newLlm);
-      setLlms((prev) => (prev ? [...prev, createdLlm] : [createdLlm]));
+      const createdModel = await createAPIModel("models", newModel);
+      setModels((prev) => (prev ? [...prev, createdModel] : [createdModel]));
     } catch (error) {
       console.error("Failed to create LLM model:", error);
     }
   };
 
-  const updateLlm = async (updatedLlm: Model) => {
+  const updateModel = async (updatedModel: Model) => {
     try {
-      const updated = await updateModel("llms", updatedLlm);
-      setLlms((prev) =>
+      const updated = await updateAPIModel("models", updatedModel);
+      setModels((prev) =>
         prev?.map((llm) => (llm.id === updated.id ? updated : llm))
       );
     } catch (error) {
@@ -72,26 +85,50 @@ export const useLlms = () => {
     }
   };
 
-  const deleteLlm = async (id: number) => {
-    const deleteAPIModel = useDeleteAPIModel();
+  const deleteModel = async (id: number) => {
     try {
       await deleteAPIModel("models", id);
-      setLlms((prev) => prev?.filter((llm) => llm.id !== id));
+      setModels((prev) => prev?.filter((llm) => llm.id !== id));
     } catch (error) {
       console.error("Failed to delete LLM model:", error);
     }
   };
 
-  const reorderLlms = async (newOrder: Model[]) => {
-    setLlms(newOrder); // Optimistic update
+  const reorderModels = async (
+    sourceIndex: number,
+    destinationIndex: number
+  ) => {
+    if (llms == null) return;
+
+    const newOrder = Array.from(llms);
+    const [movedItem] = newOrder.splice(sourceIndex, 1);
+    newOrder.splice(destinationIndex, 0, movedItem);
+
+    setModels(newOrder); // Optimistic update
+
+    const updates = newOrder.reduce((acc, model, index) => {
+      if (model.display_order !== index) {
+        acc.push({ ...model, display_order: index });
+      }
+      return acc;
+    }, [] as Model[]);
 
     try {
-      await bulkUpdateModels("llms", newOrder);
+      await Promise.all(updates.map((model) => updateModel(model)));
     } catch (error) {
       console.error("Failed to reorder LLM models:", error);
       // Optionally, rollback optimistic update
     }
   };
 
-  return { llms, addLlm, updateLlm, deleteLlm, reorderLlms };
+  return {
+    llms,
+    diffusors,
+    stts,
+    ttss,
+    addModel,
+    updateModel,
+    deleteModel,
+    reorderModels,
+  };
 };

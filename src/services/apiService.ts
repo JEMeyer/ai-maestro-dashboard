@@ -1,12 +1,12 @@
 import { useCallback } from "react";
-import { TableNames } from "../types";
+import { ApiEndpoints } from "../types";
 import { useEnvironmentVariables } from "../hooks/useEnvironmentVariables";
 
 export const useGetAllAPIModels = <T>() => {
   const { API_BASE_URL } = useEnvironmentVariables();
 
   return useCallback(
-    async (endpoint: TableNames) => {
+    async (endpoint: ApiEndpoints) => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/${endpoint}`);
 
@@ -32,7 +32,7 @@ export const usePostAPIModel = <T>() => {
 
   // Returns new ID
   return useCallback(
-    async (endpoint: TableNames, modelToInsert: T) => {
+    async (endpoint: ApiEndpoints, modelToInsert: T) => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
           method: "POST",
@@ -64,7 +64,7 @@ export const usePutAPIModel = <T extends { id: number }>() => {
 
   // Returns affectedRows
   return useCallback(
-    async (endpoint: TableNames, modelToUpdate: T) => {
+    async (endpoint: ApiEndpoints, modelToUpdate: T) => {
       try {
         const response = await fetch(
           `${API_BASE_URL}/api/${endpoint}/${modelToUpdate.id}`,
@@ -99,7 +99,7 @@ export const useDeleteAPIModel = () => {
 
   // Returns affectedRows
   return useCallback(
-    async (endpoint: TableNames, modelIdToDelete: number) => {
+    async (endpoint: ApiEndpoints, modelIdToDelete: number) => {
       try {
         const response = await fetch(
           `${API_BASE_URL}/api/${endpoint}/${modelIdToDelete}`,
