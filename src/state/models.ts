@@ -59,8 +59,8 @@ export const useModels = () => {
   const setModels = useSetRecoilState(modelsAtom);
   const llms = useRecoilValue(llmModelsSelector);
   const diffusors = useRecoilValue(diffusorModelsSelector);
-  const stts = useRecoilValue(sttModelsSelector);
-  const ttss = useRecoilValue(ttsModelsSelector);
+  const sttModels = useRecoilValue(sttModelsSelector);
+  const ttsModels = useRecoilValue(ttsModelsSelector);
   const createAPIModel = usePostAPIModel<Model>();
   const updateAPIModel = usePutAPIModel<Model>();
   const deleteAPIModel = useDeleteAPIModel();
@@ -124,8 +124,8 @@ export const useModels = () => {
   return {
     llms,
     diffusors,
-    stts,
-    ttss,
+    sttModels,
+    ttsModels,
     addModel,
     updateModel,
     deleteModel,

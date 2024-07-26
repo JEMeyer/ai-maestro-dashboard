@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Droppable } from "@hello-pangea/dnd";
 import { DroppableIdPrefix, DroppableType } from "../../types/draggable";
 import { CollapsibleList } from "../UI/List";
+import { useModels } from "../../state/models";
 
 const Container = styled.div`
   margin: 8px;
@@ -28,7 +29,7 @@ const Arrow = styled.span<{ $isCollapsed: boolean }>`
 `;
 
 export const ModelList: React.FC = () => {
-  const { llms, diffusors, sttModels, ttsModels } = useAllModelsGroupedByType();
+  const { llms, diffusors, sttModels, ttsModels } = useModels();
   const [isLLMsCollapsed, setIsLLMsCollapsed] = useState(false);
   const [isDiffusorsCollapsed, setIsDiffusorsCollapsed] = useState(false);
   const [isSpeechModelsCollapsed, setIsSpeechModelsCollapsed] = useState(false);

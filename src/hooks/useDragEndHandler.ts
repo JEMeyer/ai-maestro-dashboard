@@ -1,6 +1,6 @@
 import { DropResult } from "@hello-pangea/dnd";
-import { useSetModels } from "../state/models";
 import { DroppableType } from "../types/draggable";
+import { useModels } from "../state/models";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Item {
@@ -10,7 +10,7 @@ interface Item {
 }
 
 const useDragEndHandler = () => {
-  const setModels = useSetModels();
+  const { reorderModels } = useModels();
 
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, type } = result;
@@ -53,7 +53,7 @@ const useDragEndHandler = () => {
 
     switch (type) {
       case DroppableType.COMPUTER:
-        setCom;
+        reorderModels();
     }
 
     setModels((prev) => {
