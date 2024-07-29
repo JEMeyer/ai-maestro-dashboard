@@ -25,14 +25,15 @@ const Arrow = styled.span<{ $isCollapsed: boolean }>`
   margin-left: 8px;
   transform: ${({ $isCollapsed }) =>
     $isCollapsed ? "rotate(-90deg)" : "rotate(0)"};
-  transition: transform 0.3s ease;
+  transition: transform 0.5s ease;
 `;
 
 export const ModelList: React.FC = () => {
   const { llms, diffusors, stts, ttss } = useModels();
   const [isLLMsCollapsed, setIsLLMsCollapsed] = useState(false);
   const [isDiffusorsCollapsed, setIsDiffusorsCollapsed] = useState(false);
-  const [isSpeechModelsCollapsed, setIsSpeechModelsCollapsed] = useState(false);
+  const [isSttsCollapsed, setIsSttsCollapsed] = useState(false);
+  const [isTtssCollapsed, setIsTtssCollapsed] = useState(false);
 
   if (llms == null || diffusors == null || stts == null || ttss == null) {
     return <span>Loading models...</span>;
@@ -99,11 +100,9 @@ export const ModelList: React.FC = () => {
       </Container>
 
       <Container>
-        <Title
-          onClick={() => setIsSpeechModelsCollapsed(!isSpeechModelsCollapsed)}
-        >
-          Speech Models
-          <Arrow $isCollapsed={isSpeechModelsCollapsed}>▼</Arrow>
+        <Title onClick={() => setIsSttsCollapsed(!isSttsCollapsed)}>
+          STT Models
+          <Arrow $isCollapsed={isSttsCollapsed}>▼</Arrow>
         </Title>
         <Droppable
           droppableId={DroppableIdPrefix.STT_LIST}
@@ -113,7 +112,7 @@ export const ModelList: React.FC = () => {
             <CollapsibleList
               ref={provided.innerRef}
               {...provided.droppableProps}
-              $isCollapsed={isSpeechModelsCollapsed}
+              $isCollapsed={isSttsCollapsed}
               $isDraggingOver={snapshot.isDraggingOver}
             >
               {stts!.map((model, index) => (
@@ -130,11 +129,9 @@ export const ModelList: React.FC = () => {
       </Container>
 
       <Container>
-        <Title
-          onClick={() => setIsSpeechModelsCollapsed(!isSpeechModelsCollapsed)}
-        >
-          Speech Models
-          <Arrow $isCollapsed={isSpeechModelsCollapsed}>▼</Arrow>
+        <Title onClick={() => setIsTtssCollapsed(!isTtssCollapsed)}>
+          TTS Models
+          <Arrow $isCollapsed={isTtssCollapsed}>▼</Arrow>
         </Title>
         <Droppable
           droppableId={DroppableIdPrefix.TTS_LIST}
@@ -144,7 +141,7 @@ export const ModelList: React.FC = () => {
             <CollapsibleList
               ref={provided.innerRef}
               {...provided.droppableProps}
-              $isCollapsed={isSpeechModelsCollapsed}
+              $isCollapsed={isTtssCollapsed}
               $isDraggingOver={snapshot.isDraggingOver}
             >
               {ttss!.map((model, index) => (

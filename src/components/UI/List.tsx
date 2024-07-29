@@ -8,9 +8,9 @@ export const List = styled.div<{ $isDraggingOver: boolean }>`
 
 export const CollapsibleList = styled(List)<{
   $isCollapsed: boolean;
-  $isDraggingOver: boolean;
 }>`
-  max-height: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "auto")};
-  overflow: hidden;
-  transition: max-height background-color 0.3s ease;
+  max-height: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "400px")};
+  padding: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "initial")};
+  overflow: scroll;
+  transition: max-height 0.5s ease-in-out, background-color 0.3s ease;
 `;
