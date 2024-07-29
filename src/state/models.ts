@@ -1,7 +1,7 @@
 import { atom, useRecoilState, useSetRecoilState } from "recoil";
 import { Model, ModelType } from "../types";
 import { useDeleteAPIModel, usePutAPIModel } from "../services/apiService";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useFetchAllModelTypes } from "../services/database";
 
 const modelsAtom = atom<Model[] | undefined>({
@@ -60,86 +60,105 @@ export const useModels = () => {
   const updateAPIModel = usePutAPIModel<Model>();
   const deleteAPIModel = useDeleteAPIModel();
 
-  const updateModel = async (updatedModel: Model) => {
-    try {
-      await updateAPIModel("models", updatedModel);
-    } catch (error) {
-      console.error("Failed to update model:", error);
-    }
-  };
-
-  const deleteModel = async (name: string) => {
-    try {
-      await deleteAPIModel("models", name);
-      setModels((prev) => prev?.filter((model) => model.name !== name));
-    } catch (error) {
-      console.error("Failed to delete model:", error);
-    }
-  };
-
-  const reorderModels = async (
-    sourceIndex: number,
-    destinationIndex: number,
-    modelType: ModelType
-  ) => {
-    let droppableModels: Model[] | undefined;
-    let setDroppableModels: (
-      updaterFn: (models: Model[]) => Model[]
-    ) => void | undefined;
-
-    switch (modelType) {
-      case "llm":
-        droppableModels = llms;
-        setDroppableModels = setLlms;
-        break;
-      case "tts":
-        droppableModels = ttss;
-        setDroppableModels = setTtss;
-        break;
-      case "stt":
-        droppableModels = stts;
-        setDroppableModels = setStts;
-        break;
-      case "diffusor":
-        droppableModels = diffusors;
-        setDroppableModels = setDiffusors;
-        break;
-      default:
-        console.error(`Invalid modelType: ${modelType}`);
-        return;
-    }
-
-    if (!droppableModels || !setDroppableModels) {
-      console.error(`No models to re-order for ${modelType}.`);
-      return;
-    }
-
-    console.log("Reordering ", JSON.stringify(droppableModels));
-
-    const newOrder = Array.from(droppableModels);
-    const [movedItem] = newOrder.splice(sourceIndex, 1);
-    newOrder.splice(destinationIndex, 0, movedItem);
-
-    const updates = newOrder.reduce((acc, model, index) => {
-      if (model.display_order !== index) {
-        acc.push({ ...model, display_order: index });
+  const updateModel = useCallback(
+    async (updatedModel: Model) => {
+      try {
+        await updateAPIModel("models", updatedModel);
+      } catch (error) {
+        console.error("Failed to update model:", error);
       }
-      return acc;
-    }, [] as Model[]);
+    },
+    [updateAPIModel]
+  );
 
-    let fallback: Model[] = [];
+  const deleteModel = useCallback(
+    async (name: string) => {
+      try {
+        await deleteAPIModel("models", name);
+        setModels((prev) => prev?.filter((model) => model.name !== name));
+      } catch (error) {
+        console.error("Failed to delete model:", error);
+      }
+    },
+    [deleteAPIModel, setModels]
+  );
 
-    try {
-      await Promise.all(updates.map((model) => updateModel(model)));
-      setDroppableModels((oldState) => {
-        fallback = oldState;
-        return newOrder;
-      });
-    } catch (error) {
-      console.error("Failed to reorder models:", error);
-      setDroppableModels(() => fallback);
-    }
-  };
+  const reorderModels = useCallback(
+    async (
+      sourceIndex: number,
+      destinationIndex: number,
+      modelType: ModelType
+    ) => {
+      let droppableModels: Model[] | undefined;
+      let setDroppableModels: (
+        updaterFn: (models: Model[]) => Model[]
+      ) => void | undefined;
+
+      switch (modelType) {
+        case "llm":
+          droppableModels = llms;
+          setDroppableModels = setLlms;
+          break;
+        case "tts":
+          droppableModels = ttss;
+          setDroppableModels = setTtss;
+          break;
+        case "stt":
+          droppableModels = stts;
+          setDroppableModels = setStts;
+          break;
+        case "diffusor":
+          droppableModels = diffusors;
+          setDroppableModels = setDiffusors;
+          break;
+        default:
+          console.error(`Invalid modelType: ${modelType}`);
+          return;
+      }
+
+      if (!droppableModels || !setDroppableModels) {
+        console.error(`No models to re-order for ${modelType}.`);
+        return;
+      }
+
+      console.log("Reordering ", JSON.stringify(droppableModels));
+
+      const newOrder = Array.from(droppableModels);
+      const [movedItem] = newOrder.splice(sourceIndex, 1);
+      newOrder.splice(destinationIndex, 0, movedItem);
+
+      const updates = newOrder.reduce((acc, model, index) => {
+        if (model.display_order !== index) {
+          acc.push({ ...model, display_order: index });
+        }
+        return acc;
+      }, [] as Model[]);
+
+      let fallback: Model[] = [];
+
+      try {
+        await Promise.all(updates.map((model) => updateModel(model)));
+        setDroppableModels((oldState) => {
+          fallback = oldState;
+          return newOrder;
+        });
+      } catch (error) {
+        console.error("Failed to reorder models:", error);
+        setDroppableModels(() => fallback);
+      }
+    },
+    [
+      diffusors,
+      llms,
+      setDiffusors,
+      setLlms,
+      setStts,
+      setTtss,
+      stts,
+      ttss,
+      updateModel,
+    ]
+  );
 
   return {
     llms,

@@ -52,9 +52,11 @@ export const useReorderAssignments = () => {
     async (sourceIndex: number, destinationIndex: number, gpuId: number) => {
       if (allAssignments == null) return;
 
-      const assignments = allAssignments.filter((assignment) => {
-        return assignment.gpu_ids.includes(gpuId);
-      });
+      const assignments = allAssignments
+        .filter((assignment) => {
+          return assignment.gpu_ids.includes(gpuId);
+        })
+        .sort((a, b) => a.display_order - b.display_order);
 
       if (assignments == null) {
         console.error(`No assignments to update for gpu ${gpuId}.`);
@@ -134,14 +136,16 @@ export const useNextPortForComputer = () => {
     (computerId: number) => {
       const computer = computers?.find(({ id }) => id === computerId);
       if (computer != null) {
-        const gpusOnComputer = allGpus?.filter(
-          ({ computer_id }) => computer_id === computerId
-        );
-        const filteredAssignments = assignments?.filter((a) =>
-          a.gpu_ids.some(
-            (gpuid) => gpusOnComputer?.find(({ id }) => gpuid === id) != null
+        const gpusOnComputer = allGpus
+          ?.filter(({ computer_id }) => computer_id === computerId)
+          .sort((a, b) => a.display_order - b.display_order);
+        const filteredAssignments = assignments
+          ?.filter((a) =>
+            a.gpu_ids.some(
+              (gpuid) => gpusOnComputer?.find(({ id }) => gpuid === id) != null
+            )
           )
-        );
+          .sort((a, b) => a.display_order - b.display_order);
         return filteredAssignments;
       }
     },
