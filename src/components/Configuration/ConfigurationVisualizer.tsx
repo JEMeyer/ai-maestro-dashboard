@@ -24,6 +24,7 @@ export const ConfigurationVisualizer: React.FC = () => {
             $isDraggingOver={snapshot.isDraggingOver}
           >
             <ComputerList />
+            {provided.placeholder}
           </List>
         )}
       </Droppable>

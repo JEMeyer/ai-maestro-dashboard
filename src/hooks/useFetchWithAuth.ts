@@ -7,7 +7,6 @@ export const useFetchWithAuth = () => {
   return useCallback(
     async (url: string, options: RequestInit = {}) => {
       const headers = new Headers(options.headers || {});
-      console.log("in fetch with auth: ", authToken);
       if (authToken) {
         headers.append("Authorization", `Bearer ${authToken}`);
       }
