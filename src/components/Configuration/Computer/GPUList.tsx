@@ -54,6 +54,10 @@ export const GPUList: React.FC<{ computerId: number }> = ({ computerId }) => {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     $isDraggingOver={snapshot.isDraggingOver}
+                    $isDraggingOverLegalItem={
+                      snapshot.isDraggingOver &&
+                      snapshot.draggingFromThisWith != null
+                    }
                   >
                     <AssignedModelsList gpuId={gpu.id} />
                     {provided.placeholder}

@@ -56,6 +56,9 @@ export const ModelList: React.FC = () => {
               {...provided.droppableProps}
               $isCollapsed={isLLMsCollapsed}
               $isDraggingOver={snapshot.isDraggingOver}
+              $isDraggingOverLegalItem={
+                snapshot.isDraggingOver && snapshot.draggingFromThisWith != null
+              }
             >
               {llms!.map((model, index) => (
                 <ModelItem
@@ -85,6 +88,9 @@ export const ModelList: React.FC = () => {
               {...provided.droppableProps}
               $isCollapsed={isDiffusorsCollapsed}
               $isDraggingOver={snapshot.isDraggingOver}
+              $isDraggingOverLegalItem={
+                snapshot.isDraggingOver && snapshot.draggingFromThisWith != null
+              }
             >
               {diffusors!.map((model, index) => (
                 <ModelItem
@@ -114,6 +120,9 @@ export const ModelList: React.FC = () => {
               {...provided.droppableProps}
               $isCollapsed={isSttsCollapsed}
               $isDraggingOver={snapshot.isDraggingOver}
+              $isDraggingOverLegalItem={
+                snapshot.isDraggingOver && snapshot.draggingFromThisWith != null
+              }
             >
               {stts!.map((model, index) => (
                 <ModelItem
@@ -143,6 +152,9 @@ export const ModelList: React.FC = () => {
               {...provided.droppableProps}
               $isCollapsed={isTtssCollapsed}
               $isDraggingOver={snapshot.isDraggingOver}
+              $isDraggingOverLegalItem={
+                snapshot.isDraggingOver && snapshot.draggingFromThisWith != null
+              }
             >
               {ttss!.map((model, index) => (
                 <ModelItem

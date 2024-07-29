@@ -35,8 +35,6 @@ const Callback: React.FC = () => {
 
         const data = await response.json();
 
-        console.log(data.access_token);
-
         setAuthToken(data.access_token);
       } catch (error) {
         console.error("Error fetching token", error);

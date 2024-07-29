@@ -80,6 +80,10 @@ export const ComputerList: React.FC = () => {
                     ref={provided.innerRef}
                     {...provided.droppableProps}
                     $isDraggingOver={snapshot.isDraggingOver}
+                    $isDraggingOverLegalItem={
+                      snapshot.isDraggingOver &&
+                      snapshot.draggingFromThisWith != null
+                    }
                   >
                     <GPUList computerId={computer.id} />
                     {provided.placeholder}

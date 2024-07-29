@@ -121,8 +121,6 @@ export const useModels = () => {
         return;
       }
 
-      console.log("Reordering ", JSON.stringify(droppableModels));
-
       const newOrder = Array.from(droppableModels);
       const [movedItem] = newOrder.splice(sourceIndex, 1);
       newOrder.splice(destinationIndex, 0, movedItem);
