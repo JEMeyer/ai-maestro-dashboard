@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
-import { GPU } from "../../../types";
 import {
   DraggableIdPrefix,
   DroppableIdPrefix,
@@ -9,7 +8,7 @@ import {
 } from "../../../types/draggable";
 import { List } from "../../UI/List";
 import { AssignedModelsList } from "./AssignedModelsList";
-import { useAssignmentsForGpus } from "../../../state/assignment";
+import { useGpusForComputer } from "../../../state/gpus";
 
 const GPUContainer = styled.div`
   margin: 4px;
@@ -26,8 +25,11 @@ const GPUName = styled.div`
   font-size: 1em;
 `;
 
-export const GPUList: React.FC<{ gpus: GPU[] }> = ({ gpus }) => {
-  const assignmentsForGpuIds = useAssignmentsForGpus(gpus.map(({ id }) => id));
+export const GPUList: React.FC<{ computerId: number }> = ({ computerId }) => {
+  const gpus = useGpusForComputer(computerId);
+
+  if (gpus == null) return <span>Loading gpus...</span>;
+
   return (
     <>
       {gpus.map((gpu, index) => (
@@ -53,10 +55,7 @@ export const GPUList: React.FC<{ gpus: GPU[] }> = ({ gpus }) => {
                     {...provided.droppableProps}
                     $isDraggingOver={snapshot.isDraggingOver}
                   >
-                    <AssignedModelsList
-                      gpuId={gpu.id}
-                      assignments={assignmentsForGpuIds.get(gpu.id) ?? []}
-                    />
+                    <AssignedModelsList gpuId={gpu.id} />
                     {provided.placeholder}
                   </List>
                 )}

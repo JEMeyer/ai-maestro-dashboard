@@ -1,14 +1,15 @@
 import { useCallback } from "react";
-import { useCookies } from "react-cookie";
+import { useAuthToken } from "../state/auth";
 
 export const useFetchWithAuth = () => {
-  const [cookies] = useCookies(["auth"]);
+  const authToken = useAuthToken();
 
   return useCallback(
     async (url: string, options: RequestInit = {}) => {
       const headers = new Headers(options.headers || {});
-      if (cookies.auth) {
-        headers.append("Authorization", `Bearer ${cookies.auth}`);
+      console.log("in fetch with auth: ", authToken);
+      if (authToken) {
+        headers.append("Authorization", `Bearer ${authToken}`);
       }
 
       const response = await fetch(url, {
@@ -23,6 +24,6 @@ export const useFetchWithAuth = () => {
 
       return response.json();
     },
-    [cookies.auth]
+    [authToken]
   );
 };

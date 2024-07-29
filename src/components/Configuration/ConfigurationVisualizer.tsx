@@ -5,8 +5,10 @@ import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import useDragEndHandler from "../../hooks/useDragEndHandler";
 import { DroppableIdPrefix, DroppableType } from "../../types/draggable";
 import { List } from "../UI/List";
+import { useFetchAndSetAllData } from "../../state/useFetchAndSetAllData";
 
 export const ConfigurationVisualizer: React.FC = () => {
+  useFetchAndSetAllData();
   const handleDragEnd = useDragEndHandler();
 
   return (

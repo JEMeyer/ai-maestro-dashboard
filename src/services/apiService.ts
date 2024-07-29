@@ -32,7 +32,7 @@ export const usePostAPIModel = <T>() => {
 
   // Returns new ID
   return useCallback(
-    async (endpoint: ApiEndpoints, modelToInsert: T) => {
+    async (endpoint: ApiEndpoints, modelToInsert: Omit<T, "id">) => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/${endpoint}`, {
           method: "POST",
@@ -46,10 +46,11 @@ export const usePostAPIModel = <T>() => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        return data.id;
+        const newId = Number(data.id);
+        return { ...modelToInsert, id: newId };
       } catch (error) {
         console.error(
-          "There has been a problem with your fetch operation:",
+          "There has been a problem with your post operation:",
           error
         );
         return null;
@@ -59,7 +60,7 @@ export const usePostAPIModel = <T>() => {
   );
 };
 
-export const usePutAPIModel = <T extends { id: number }>() => {
+export const usePutAPIModel = <T extends object>() => {
   const { API_BASE_URL } = useEnvironmentVariables();
 
   // Returns affectedRows
@@ -67,7 +68,9 @@ export const usePutAPIModel = <T extends { id: number }>() => {
     async (endpoint: ApiEndpoints, modelToUpdate: T) => {
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/${endpoint}/${modelToUpdate.id}`,
+          `${API_BASE_URL}/api/${endpoint}${
+            "id" in modelToUpdate ? `/${modelToUpdate.id}` : ""
+          }`,
           {
             method: "PUT",
             headers: {
@@ -81,13 +84,13 @@ export const usePutAPIModel = <T extends { id: number }>() => {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        return data.id;
+        return Number(data.affectedRows);
       } catch (error) {
         console.error(
           "There has been a problem with your fetch operation:",
           error
         );
-        return null;
+        return 0;
       }
     },
     [API_BASE_URL]
@@ -99,7 +102,7 @@ export const useDeleteAPIModel = () => {
 
   // Returns affectedRows
   return useCallback(
-    async (endpoint: ApiEndpoints, modelIdToDelete: number) => {
+    async (endpoint: ApiEndpoints, modelIdToDelete: number | string) => {
       try {
         const response = await fetch(
           `${API_BASE_URL}/api/${endpoint}/${modelIdToDelete}`,

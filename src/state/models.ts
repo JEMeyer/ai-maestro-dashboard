@@ -1,110 +1,124 @@
-import { atom, selector, useRecoilValue, useSetRecoilState } from "recoil";
-import { Model } from "../types";
-import {
-  useDeleteAPIModel,
-  useGetAllAPIModels,
-  usePostAPIModel,
-  usePutAPIModel,
-} from "../services/apiService";
-import { useCallback } from "react";
+import { atom, useRecoilState, useSetRecoilState } from "recoil";
+import { Model, ModelType } from "../types";
+import { useDeleteAPIModel, usePutAPIModel } from "../services/apiService";
+import { useEffect } from "react";
+import { useFetchAllModelTypes } from "../services/database";
 
 const modelsAtom = atom<Model[] | undefined>({
-  key: "llmsAtom",
+  key: "modelsAtom",
   default: undefined,
 });
 
-const llmModelsSelector = selector<Model[] | undefined>({
-  key: "llmModelsSelector",
-  get: ({ get }) => {
-    const models = get(modelsAtom);
-    return models?.filter((model) => model.model_type === "llm");
-  },
-});
-
-const diffusorModelsSelector = selector<Model[] | undefined>({
-  key: "diffusorModelsSelector",
-  get: ({ get }) => {
-    const models = get(modelsAtom);
-    return models?.filter((model) => model.model_type === "diffusor");
-  },
-});
-
-const sttModelsSelector = selector<Model[] | undefined>({
-  key: "sttModelsSelector",
-  get: ({ get }) => {
-    const models = get(modelsAtom);
-    return models?.filter((model) => model.model_type === "stt");
-  },
-});
-
-const ttsModelsSelector = selector<Model[] | undefined>({
-  key: "ttsModelsSelector",
-  get: ({ get }) => {
-    const models = get(modelsAtom);
-    return models?.filter((model) => model.model_type === "tts");
-  },
-});
-
 export const useFetchAndSetAllModels = () => {
-  const fetchAllModels = useGetAllAPIModels<Model>();
   const setModels = useSetRecoilState(modelsAtom);
+  const fetchAllModels = useFetchAllModelTypes<Model>("models");
 
-  return useCallback(async () => {
-    const data = await fetchAllModels("models");
-    setModels(data);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchAllModels();
+        setModels(data);
+      } catch (error) {
+        console.error("Failed to fetch models:", error);
+      }
+    };
+
+    fetchData();
   }, [fetchAllModels, setModels]);
+};
+
+const useModelsOfType = (modelType: ModelType) => {
+  const [models, setModels] = useRecoilState(modelsAtom);
+
+  const filteredModels = models
+    ?.filter((model) => model.model_type === modelType)
+    .sort((a, b) => a.display_order - b.display_order);
+
+  const updateFilteredModels = (updaterFn: (models: Model[]) => Model[]) => {
+    const updatedFilteredModels = updaterFn(filteredModels ?? []);
+
+    const newModels = models?.map((model) => {
+      if (model.model_type === modelType) {
+        return updatedFilteredModels.shift() || model;
+      } else {
+        return model;
+      }
+    });
+
+    setModels(newModels);
+  };
+
+  return [filteredModels, updateFilteredModels] as const;
 };
 
 export const useModels = () => {
   const setModels = useSetRecoilState(modelsAtom);
-  const llms = useRecoilValue(llmModelsSelector);
-  const diffusors = useRecoilValue(diffusorModelsSelector);
-  const stts = useRecoilValue(sttModelsSelector);
-  const ttss = useRecoilValue(ttsModelsSelector);
-  const createAPIModel = usePostAPIModel<Model>();
+  const [llms, setLlms] = useModelsOfType("llm");
+  const [diffusors, setDiffusors] = useModelsOfType("diffusor");
+  const [stts, setStts] = useModelsOfType("stt");
+  const [ttss, setTtss] = useModelsOfType("tts");
   const updateAPIModel = usePutAPIModel<Model>();
   const deleteAPIModel = useDeleteAPIModel();
 
-  const addModel = async (newModel: Model) => {
-    try {
-      const createdModel = await createAPIModel("models", newModel);
-      setModels((prev) => (prev ? [...prev, createdModel] : [createdModel]));
-    } catch (error) {
-      console.error("Failed to create LLM model:", error);
-    }
-  };
-
   const updateModel = async (updatedModel: Model) => {
     try {
-      const updated = await updateAPIModel("models", updatedModel);
-      setModels((prev) =>
-        prev?.map((llm) => (llm.id === updated.id ? updated : llm))
-      );
+      await updateAPIModel("models", updatedModel);
     } catch (error) {
-      console.error("Failed to update LLM model:", error);
+      console.error("Failed to update model:", error);
     }
   };
 
-  const deleteModel = async (id: number) => {
+  const deleteModel = async (name: string) => {
     try {
-      await deleteAPIModel("models", id);
-      setModels((prev) => prev?.filter((llm) => llm.id !== id));
+      await deleteAPIModel("models", name);
+      setModels((prev) => prev?.filter((model) => model.name !== name));
     } catch (error) {
-      console.error("Failed to delete LLM model:", error);
+      console.error("Failed to delete model:", error);
     }
   };
 
   const reorderModels = async (
     sourceIndex: number,
-    destinationIndex: number
+    destinationIndex: number,
+    modelType: ModelType
   ) => {
-    if (llms == null) return;
+    let droppableModels: Model[] | undefined;
+    let setDroppableModels: (
+      updaterFn: (models: Model[]) => Model[]
+    ) => void | undefined;
 
-    const newOrder = Array.from(llms);
+    switch (modelType) {
+      case "llm":
+        droppableModels = llms;
+        setDroppableModels = setLlms;
+        break;
+      case "tts":
+        droppableModels = ttss;
+        setDroppableModels = setTtss;
+        break;
+      case "stt":
+        droppableModels = stts;
+        setDroppableModels = setStts;
+        break;
+      case "diffusor":
+        droppableModels = diffusors;
+        setDroppableModels = setDiffusors;
+        break;
+      default:
+        console.error(`Invalid modelType: ${modelType}`);
+        return;
+    }
+
+    if (!droppableModels || !setDroppableModels) {
+      console.error(`No models to re-order for ${modelType}.`);
+      return;
+    }
+
+    console.log("Reordering ", JSON.stringify(droppableModels));
+
+    const newOrder = Array.from(droppableModels);
     const [movedItem] = newOrder.splice(sourceIndex, 1);
     newOrder.splice(destinationIndex, 0, movedItem);
-
-    setModels(newOrder); // Optimistic update
 
     const updates = newOrder.reduce((acc, model, index) => {
       if (model.display_order !== index) {
@@ -113,11 +127,17 @@ export const useModels = () => {
       return acc;
     }, [] as Model[]);
 
+    let fallback: Model[] = [];
+
     try {
       await Promise.all(updates.map((model) => updateModel(model)));
+      setDroppableModels((oldState) => {
+        fallback = oldState;
+        return newOrder;
+      });
     } catch (error) {
-      console.error("Failed to reorder LLM models:", error);
-      // Optionally, rollback optimistic update
+      console.error("Failed to reorder models:", error);
+      setDroppableModels(() => fallback);
     }
   };
 
@@ -126,7 +146,6 @@ export const useModels = () => {
     diffusors,
     stts,
     ttss,
-    addModel,
     updateModel,
     deleteModel,
     reorderModels,

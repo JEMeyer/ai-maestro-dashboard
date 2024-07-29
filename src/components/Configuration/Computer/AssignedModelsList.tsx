@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { Draggable } from "@hello-pangea/dnd";
-import { Assignment } from "../../../types";
 import { DraggableIdPrefix } from "../../../types/draggable";
+import { useAssignmentsForGpu } from "../../../state/assignment";
 
 const ModelContainer = styled.div`
   margin: 4px;
@@ -20,9 +20,12 @@ const ModelName = styled.div`
 `;
 
 export const AssignedModelsList: React.FC<{
-  assignments: Assignment[];
   gpuId: number;
-}> = ({ assignments, gpuId }) => {
+}> = ({ gpuId }) => {
+  const assignments = useAssignmentsForGpu(gpuId);
+
+  if (assignments == null) return <span>Loading assignments...</span>;
+
   return (
     <>
       {assignments.map((assignment, index) => (

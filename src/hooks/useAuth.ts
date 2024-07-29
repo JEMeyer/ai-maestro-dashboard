@@ -1,25 +1,27 @@
 import { useCallback, useEffect } from "react";
 import { useSetIsBusy, useSetUser, useUserValue } from "../state/app";
-import { useFetchWithAuth } from "./useFetchWithAuth";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { useEnvironmentVariables } from "./useEnvironmentVariables";
+import { useFetchWithAuth } from "./useFetchWithAuth";
+import { useAuthToken, useSetAuthToken } from "../state/auth";
 
 export const useAuth = () => {
   const user = useUserValue();
   const setUser = useSetUser();
   const { OAUTH_URL, OAUTH_CLIENT_ID } = useEnvironmentVariables();
   const navigate = useNavigate();
-  const [cookies, , deleteAuthToken] = useCookies(["auth"]);
   const fetchWithAuth = useFetchWithAuth();
+  const setAuthToken = useSetAuthToken();
+  const authToken = useAuthToken();
+
   const setIsBusy = useSetIsBusy();
 
   const handleLogout = useCallback(() => {
-    deleteAuthToken("auth");
+    setAuthToken(null);
     setUser(null);
     navigate("/");
     setIsBusy(false);
-  }, [deleteAuthToken, navigate, setIsBusy, setUser]);
+  }, [setAuthToken, navigate, setIsBusy, setUser]);
 
   const fetchUserDetails = useCallback(async () => {
     try {
@@ -33,15 +35,15 @@ export const useAuth = () => {
 
   useEffect(() => {
     //changes to the auth token reset user status
-    if (cookies.auth !== undefined) {
+    if (authToken != null) {
       setUser(undefined);
     }
-  }, [cookies.auth, setUser]);
+  }, [authToken, setUser]);
 
   useEffect(() => {
     const checkAuthToken = async () => {
       if (user === undefined) {
-        if (cookies.auth != null) {
+        if (authToken != null) {
           await fetchUserDetails();
         } else {
           setUser(null);
@@ -51,7 +53,7 @@ export const useAuth = () => {
     };
 
     checkAuthToken();
-  }, [fetchUserDetails, cookies.auth, user, setIsBusy, setUser]);
+  }, [fetchUserDetails, user, setIsBusy, setUser, authToken]);
 
   const handleLogin = useCallback(async () => {
     const clientId = OAUTH_CLIENT_ID;

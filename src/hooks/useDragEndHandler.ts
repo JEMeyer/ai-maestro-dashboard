@@ -1,18 +1,18 @@
 import { DropResult } from "@hello-pangea/dnd";
-import { useSetModels } from "../state/models";
-import { DroppableType } from "../types/draggable";
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface Item {
-  id: string;
-  type: DroppableType;
-  content: string;
-}
+import { useModels } from "../state/models";
+import { DroppableIdPrefix, DroppableType } from "../types/draggable";
+import { useReorderComputers } from "../state/computers";
+import { useReorderAssignments } from "../state/assignment";
+import { ModelType } from "../types";
+import { useGpus } from "../state/gpus";
 
 const useDragEndHandler = () => {
-  const setModels = useSetModels();
+  const { reorderModels } = useModels();
+  const reorderComputers = useReorderComputers();
+  const { reorderGpus } = useGpus();
+  const reorderAssignments = useReorderAssignments();
 
-  const handleDragEnd = (result: DropResult) => {
+  const handleDragEnd = async (result: DropResult) => {
     const { destination, source, type } = result;
 
     // Dropped outside list
@@ -29,51 +29,79 @@ const useDragEndHandler = () => {
     switch (type) {
       case DroppableType.COMPUTER:
       case DroppableType.GPU:
-      case DroppableType.ASSIGNMENT:
-        reorderItems(result);
+      case DroppableType.ASSIGNMENT: {
+        // Only invoke re-order if we actually dropped within our list
+        if (destination.droppableId === source.droppableId)
+          await reorderItems(result);
         break;
+      }
       case DroppableType.MODEL:
-        performModelAction(result);
+        await performModelAction(result);
         break;
       default:
         break;
     }
   };
 
-  //   const reorderItems = (startIndex: number, endIndex: number) => {
-  //     const newItems = Array.from(items);
-  //     const [movedItem] = newItems.splice(startIndex, 1);
-  //     newItems.splice(endIndex, 0, movedItem);
-
-  //     setItems(newItems);
-
-  const reorderItems = (result: DropResult) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { destination, source, type } = result;
-
+  const reorderItems = async ({ destination, source, type }: DropResult) => {
     switch (type) {
       case DroppableType.COMPUTER:
-        setCom;
+        return await reorderComputers(source.index, destination?.index ?? 0);
+      case DroppableType.ASSIGNMENT: {
+        const gpuId = Number(
+          source.droppableId.replace(DroppableIdPrefix.ASSIGNMENT_LIST, "")
+        );
+        return await reorderAssignments(
+          source.index,
+          destination?.index ?? 0,
+          gpuId
+        );
+      }
+      case DroppableType.GPU: {
+        const computerId = Number(
+          source.droppableId.replace(DroppableIdPrefix.GPU_LIST, "")
+        );
+        return await reorderGpus(
+          source.index,
+          destination?.index ?? 0,
+          computerId
+        );
+      }
+      case DroppableType.MODEL:
+      default:
+        throw new Error(`Invalid type ${type} for reorderItem`);
     }
-
-    setModels((prev) => {
-      if (prev == null) return prev;
-
-      // const sourceIndex = prev.findIndex((model) => model.name === draggableId);
-      // const indexDelta = source.index - destination.index;
-      // const destinationIndex = sourceIndex - indexDelta;
-
-      const updatedModels = [...prev];
-      // const sourceElement = updatedModels.splice(sourceIndex, 1)[0];
-      // updatedModels.splice(destinationIndex, 0, sourceElement);
-      return updatedModels;
-    });
   };
 
-  const performModelAction = (result: DropResult) => {
-    // Stub for performing an action when a model is dragged and dropped
-    console.log(`Performing action for model: ${result}`);
-    // Add your custom logic here
+  const performModelAction = async ({ destination, source }: DropResult) => {
+    // See if we are in our same list (we are reordering)
+    if (destination?.droppableId === source.droppableId) {
+      let modelType: ModelType | null = null;
+      if (source.droppableId.startsWith(DroppableIdPrefix.STT_LIST)) {
+        modelType = "stt";
+      } else if (
+        source.droppableId.startsWith(DroppableIdPrefix.DIFFUSOR_LIST)
+      ) {
+        modelType = "diffusor";
+      } else if (source.droppableId.startsWith(DroppableIdPrefix.TTS_LIST)) {
+        modelType = "tts";
+      } else if (source.droppableId.startsWith(DroppableIdPrefix.LLM_LIST)) {
+        modelType = "llm";
+      }
+
+      console.log("modelType after droppableId lookup: ", modelType);
+
+      if (modelType == null) return;
+
+      return await reorderModels(source.index, destination?.index, modelType);
+    }
+
+    // Otherwise see if we just got dragged to a gpu's assignment list
+    if (
+      destination?.droppableId.startsWith(DroppableIdPrefix.ASSIGNMENT_LIST)
+    ) {
+      console.log("Begin assignment creation flow.");
+    }
   };
 
   return handleDragEnd;

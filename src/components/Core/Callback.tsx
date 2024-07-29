@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
 import { useEnvironmentVariables } from "../../hooks/useEnvironmentVariables";
 import { useSetIsBusy, useUserValue } from "../../state/app";
+import { useSetAuthToken } from "../../state/auth";
 
 const Callback: React.FC = () => {
-  const [, setCookie] = useCookies(["auth"]);
+  const setAuthToken = useSetAuthToken();
   const user = useUserValue();
   const location = useLocation();
   const navigate = useNavigate();
@@ -34,20 +34,10 @@ const Callback: React.FC = () => {
         });
 
         const data = await response.json();
-        let cookieOptions: {
-          path: string;
-          secure: boolean;
-          sameSite: boolean | "none" | "lax" | "strict" | undefined;
-        };
-        if (process.env.NODE_ENV === "production") {
-          // Production environment: Secure and SameSite options are set for security purposes
-          cookieOptions = { path: "/", secure: true, sameSite: "none" };
-        } else {
-          // Development environment: No restrictions on secure connections or SameSite policy
-          cookieOptions = { path: "/", secure: false, sameSite: "lax" };
-        }
 
-        setCookie("auth", data.access_token, cookieOptions);
+        console.log(data.access_token);
+
+        setAuthToken(data.access_token);
       } catch (error) {
         console.error("Error fetching token", error);
         // TODO redirect to error page
@@ -56,7 +46,7 @@ const Callback: React.FC = () => {
     if (code != null) {
       fetchToken(code);
     }
-  }, [OAUTH_CLIENT_ID, OAUTH_URL, location.search, navigate, setCookie]);
+  }, [OAUTH_CLIENT_ID, OAUTH_URL, location.search, navigate, setAuthToken]);
 
   // Wait until the auth is actually updated to redirect to /dashboard
   useEffect(() => {

@@ -23,6 +23,7 @@ export const useSetIsBusy = () => {
 
   const setIsBusy = useCallback(
     (newIsBusy: boolean) => {
+      console.log("isbusy");
       setState((prev) => {
         return { ...prev, isBusy: newIsBusy };
       });

@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Draggable, Droppable } from "@hello-pangea/dnd";
 import { EditableTitle } from "./EditableTitle"; // Import the EditableTitle component
-import { useAllGpus } from "../../../state/gpus";
-import { useAllComputers } from "../../../state/computers";
 import { GPUList } from "./GPUList";
 import {
   DraggableIdPrefix,
@@ -11,6 +9,7 @@ import {
   DroppableType,
 } from "../../../types/draggable";
 import { List } from "../../UI/List";
+import { useComputers } from "../../../state/computers";
 
 const Container = styled.div`
   margin: 8px;
@@ -32,8 +31,7 @@ const TitleContainer = styled.div`
 `;
 
 export const ComputerList: React.FC = () => {
-  const computers = useAllComputers();
-  const gpus = useAllGpus();
+  const [computers] = useComputers();
   const [computerNames, setComputerNames] = useState<{ [key: string]: string }>(
     {}
   );
@@ -46,7 +44,7 @@ export const ComputerList: React.FC = () => {
     // Here you might want to call an API to update the computer name in the backend
   };
 
-  if (computers == null || gpus == null) {
+  if (computers == null) {
     return <span>Loading computers...</span>;
   }
 
@@ -83,11 +81,7 @@ export const ComputerList: React.FC = () => {
                     {...provided.droppableProps}
                     $isDraggingOver={snapshot.isDraggingOver}
                   >
-                    <GPUList
-                      gpus={gpus.filter(
-                        ({ computer_id }) => computer.id === computer_id
-                      )}
-                    />
+                    <GPUList computerId={computer.id} />
                     {provided.placeholder}
                   </List>
                 )}

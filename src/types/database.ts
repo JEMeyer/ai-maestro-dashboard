@@ -7,7 +7,7 @@ interface BaseItem {
 export type ApiEndpoints = "computers" | "models" | "gpus" | "assignments";
 
 export type ModelType = "llm" | "diffusor" | "stt" | "tts";
-export interface Model extends BaseItem {
+export interface Model extends Omit<BaseItem, "id"> {
   size: number;
   model_type: ModelType;
 }
@@ -25,6 +25,6 @@ export interface Computer extends BaseItem {
 
 export interface Assignment extends BaseItem {
   model_name: string;
-  gpuIds: number[];
+  gpu_ids: number[];
   port: number;
 }
