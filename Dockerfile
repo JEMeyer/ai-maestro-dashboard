@@ -1,32 +1,25 @@
-# Use a minimal Node.js base image
-FROM node:bullseye AS base
+# =========================
+# Stage 1: Base
+# =========================
+FROM node:20-alpine AS base
 
-# Enable pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# Builder stage
-FROM base AS builder
-
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and pnpm-lock.yaml
-COPY package.json pnpm-lock.yaml ./
+# Copy package files and install dependencies
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Copy the rest of the project files
+# Copy the rest of the application code
 COPY . .
 
-# Build the React app
-RUN pnpm run build
+# Build the TypeScript application
+RUN yarn build
 
 # Final runtime image
 FROM nginx:alpine
 
 # Copy the built files from the builder image
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=base /app/build /usr/share/nginx/html
 
 # Copy nginx config to the container
 COPY nginx.conf /etc/nginx/conf.d/default.conf
