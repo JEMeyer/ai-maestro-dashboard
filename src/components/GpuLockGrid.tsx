@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import useGpuLockStatus from "../hooks/useGpuLockStatus";
 import { useSetIsBusy } from "../state/app";
+import moment from "moment";
 
 const Container = styled.div`
   padding: 20px;
@@ -47,12 +48,18 @@ const GpuLockGrid: React.FC = () => {
         {Object.keys(data).map((key) => {
           const gpuData = data[key];
           return (
-            <StatusCard $isLocked={gpuData.ModelInUse !== ""} key={key}>
-              <h2>{key}</h2>
+            <StatusCard $isLocked={gpuData.IsLocked} key={key}>
+              <h2>GPU {key}</h2>
               <p>
-                {gpuData.ModelInUse !== ""
-                  ? `Locked by ${gpuData.ModelInUse}`
+                {gpuData.IsLocked
+                  ? `Locked by ${gpuData.CurrentModel}`
                   : "Free"}
+              </p>
+
+              <p>
+                {gpuData.LastActivity
+                  ? moment(gpuData.LastActivity).fromNow()
+                  : ""}
               </p>
             </StatusCard>
           );

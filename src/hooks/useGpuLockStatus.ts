@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { useEnvironmentVariables } from "./useEnvironmentVariables";
 
 interface GpuStatus {
-  ModelInUse: string;
+  GpuId: string;
+  CurrentModel?: string;
+  LastActivity?: Date;
+  IsLocked: boolean;
 }
 
 interface Data {
@@ -51,7 +54,12 @@ const useGpuLockStatus = () => {
       // Transform the event data
       const transformedData: Data = Object.entries(rawData).reduce(
         (acc, [gpuId, modelInUse]) => {
-          acc[gpuId] = { ModelInUse: modelInUse as string };
+          acc[gpuId] = {
+            ...acc[gpuId],
+            CurrentModel: String(modelInUse),
+            IsLocked: String(modelInUse) != "",
+            LastActivity: new Date(),
+          };
           return acc;
         },
         {} as Data
