@@ -11,25 +11,27 @@ import About from "./components/Header/About";
 import Contact from "./components/Header/Contact";
 import Unauthenticated from "./components/Pages/Unauthenticated";
 import { ConfigurationVisualizer } from "./components/Configuration/ConfigurationVisualizer";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <Router>
       <RecoilRoot>
         <LoadingWrapper>
+          <Toaster />
           <Header />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/callback" element={<Callback />} />
+            <Route path='/' element={<Home />} />
+            <Route path='/callback' element={<Callback />} />
             <Route
-              path="/configuration"
+              path='/configuration'
               element={<PrivateRoute element={<ConfigurationVisualizer />} />}
             />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/unauthenticated" element={<Unauthenticated />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path='/about' element={<About />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/unauthenticated' element={<Unauthenticated />} />
+            <Route path='/unauthorized' element={<Unauthorized />} />
+            <Route path='*' element={<NotFound />} />
           </Routes>
         </LoadingWrapper>
       </RecoilRoot>

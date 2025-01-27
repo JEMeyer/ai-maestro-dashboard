@@ -8,6 +8,7 @@ import { GPU } from "../types";
 import { useFetchAllModelTypes } from "../services/database";
 import { useCallback, useEffect, useMemo } from "react";
 import { usePutAPIModel } from "../services/apiService";
+import toast from "react-hot-toast";
 
 const allGpusAtom = atom<GPU[] | null>({
   key: "allGpusAtom",
@@ -36,7 +37,11 @@ export const useFetchAndSetAllGpus = () => {
       }
     };
 
-    fetchData();
+    toast.promise(fetchData, {
+      loading: "Fetching gpus...",
+      success: "Gpus fetched",
+      error: "Error fetching gpus",
+    });
   }, [fetchAllModels, setGpus]);
 };
 
@@ -56,7 +61,7 @@ export const useGpusForComputer = (computerId: number) => {
 
 export const useGpus = () => {
   const [allGpus, setAllGpus] = useRecoilState(allGpusAtom);
-  const updateGpu = usePutAPIModel<GPU>();
+  const updateAPIModel = usePutAPIModel<GPU>();
 
   const reorderGpus = useCallback(
     async (
@@ -96,15 +101,17 @@ export const useGpus = () => {
         }
       });
 
-      try {
-        setAllGpus(newGpus);
-        await Promise.all(updates.map((model) => updateGpu("gpus", model)));
-      } catch (error) {
-        console.error("Failed to reorder models:", error);
-        setAllGpus(() => allGpus);
-      }
+      setAllGpus(newGpus);
+      toast.promise(
+        Promise.all(updates.map((model) => updateAPIModel("gpus", model))),
+        {
+          loading: "Reordering gpus...",
+          success: "Gpus reordered",
+          error: "Error reordering gpus",
+        }
+      );
     },
-    [allGpus, setAllGpus, updateGpu]
+    [allGpus, setAllGpus, updateAPIModel]
   );
 
   return { allGpus, reorderGpus };

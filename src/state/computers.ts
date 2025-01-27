@@ -3,6 +3,7 @@ import { Computer } from "../types";
 import { useFetchAllModelTypes } from "../services/database";
 import { useCallback, useEffect } from "react";
 import { usePutAPIModel } from "../services/apiService";
+import toast from "react-hot-toast";
 
 const allComputersAtom = atom<Computer[] | null>({
   key: "allComputersAtom",
@@ -23,7 +24,11 @@ export const useFetchAndSetAllComputers = () => {
       }
     };
 
-    fetchData();
+    toast.promise(fetchData, {
+      loading: "Fetching computers...",
+      success: "Computers fetched",
+      error: "Error fetching computers",
+    });
   }, [fetchAllModels, setComputers]);
 };
 
@@ -52,24 +57,18 @@ export const useReorderComputers = () => {
         return acc;
       }, [] as Computer[]);
 
-      try {
-        // Optimisitic update
-        setComputers(newOrder);
+      setComputers(newOrder);
 
-        await Promise.all(
-          updates.map(async (model) => {
-            try {
-              await updateAPIModel("computers", model);
-            } catch (error) {
-              console.error("Failed to update LLM model:", error);
-            }
-          })
-        );
-      } catch (error) {
-        console.error("Failed to reorder LLM models:", error);
-        // Rollback optimistic update
-        setComputers(computers);
-      }
+      toast.promise(
+        Promise.all(
+          updates.map(async (model) => await updateAPIModel("computers", model))
+        ),
+        {
+          loading: "Reordering computers...",
+          success: "Computers reordered",
+          error: "Error reordering computers",
+        }
+      );
     },
     [computers, setComputers, updateAPIModel]
   );

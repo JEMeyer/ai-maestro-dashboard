@@ -10,6 +10,7 @@ import { useCallback, useEffect } from "react";
 import { usePostAPIModel, usePutAPIModel } from "../services/apiService";
 import { useComputers } from "./computers";
 import { useGpus } from "./gpus";
+import toast from "react-hot-toast";
 
 const allAssignmentsAtom = atom<Assignment[] | null>({
   key: "allAssignmentsAtom",
@@ -30,7 +31,11 @@ export const useFetchAndSetAllAssignments = () => {
       }
     };
 
-    fetchData();
+    toast.promise(fetchData, {
+      loading: "Fetching assignments...",
+      success: "Assignments fetched",
+      error: "Error fetching assignments",
+    });
   }, [setAssignments, fetchAllModels]);
 };
 
@@ -84,24 +89,20 @@ export const useReorderAssignments = () => {
         }
       });
 
-      try {
         // Optimistic update
         setAssignments(optimisticState);
-
-        await Promise.all(
-          updates.map(async (model) => {
-            try {
-              await updateAPIModel("assignments", model);
-            } catch (error) {
-              console.error("Failed to update LLM model:", error);
-            }
-          })
+        toast.promise(
+          Promise.all(
+            updates.map(
+              async (model) => await updateAPIModel("assignments", model)
+            )
+          ),
+          {
+            loading: "Reordering assignments...",
+            success: "Assignments reordered",
+            error: "Error reordering assignments",
+          }
         );
-      } catch (error) {
-        console.error("Failed to reorder LLM models:", error);
-        // Rollback optimistic update
-        setAssignments(allAssignments);
-      }
     },
     [allAssignments, setAssignments, updateAPIModel]
   );
