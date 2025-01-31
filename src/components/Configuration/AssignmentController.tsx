@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { DragDropContext } from "@hello-pangea/dnd";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import {
   useDragUpdateHandler,
   useDragEndHandler,
@@ -7,13 +7,20 @@ import {
 import { useModels } from "../../state/models";
 import { DroppableIdPrefix } from "../../types/draggable";
 import CreateAssignmentModal from "./CreateConfigurationModal";
+import { Model } from "../../types";
 
 interface AssignmentControllerProps {
   children: React.ReactNode;
 }
 
-const AssignmentController: React.FC<AssignmentControllerProps> = ({ children }) => {
-  const [assignmentModal, setAssignmentModal] = useState({
+const AssignmentController: React.FC<AssignmentControllerProps> = ({
+  children,
+}) => {
+  const [assignmentModal, setAssignmentModal] = useState<{
+    isOpen: boolean;
+    gpuId: number | null;
+    model: Model | null;
+  }>({
     isOpen: false,
     gpuId: null,
     model: null,
@@ -24,8 +31,8 @@ const AssignmentController: React.FC<AssignmentControllerProps> = ({ children })
   const baseDragEndHandler = useDragEndHandler();
 
   const handleDragEnd = useCallback(
-    async (result) => {
-      const { destination, source, draggableId } = result;
+    async (result: DropResult) => {
+      const { destination, draggableId } = result;
 
       // Check if we're dropping a model onto a GPU's assignment list
       if (
@@ -81,7 +88,7 @@ const AssignmentController: React.FC<AssignmentControllerProps> = ({ children })
         isOpen={assignmentModal.isOpen}
         onClose={handleCloseModal}
         model={assignmentModal.model}
-        gpuId={assignmentModal.gpuId}
+        gpuId={assignmentModal.gpuId ?? 0   }
       />
     </>
   );
