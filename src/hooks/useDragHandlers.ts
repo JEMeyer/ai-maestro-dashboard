@@ -1,4 +1,4 @@
-import { DragUpdate, DropResult } from "@hello-pangea/dnd";
+import { DropResult } from "@hello-pangea/dnd";
 import { useModels } from "../state/models";
 import { DroppableIdPrefix, DroppableType } from "../types/draggable";
 import { useReorderComputers } from "../state/computers";
@@ -113,11 +113,4 @@ export const useDragEndHandler = () => {
   );
 
   return handleDragEnd;
-};
-
-export const useDragUpdateHandler = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDragUpdate = (_result: DragUpdate) => {};
-
-  return handleDragUpdate;
 };

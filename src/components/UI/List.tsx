@@ -6,8 +6,17 @@ export const List = styled.div<{
 }>`
   position: relative;
   padding: 8px;
-  transition: background-color 0.3s ease;
-  background-color: ${(props) => (props.$isDraggingOver ? "skyblue" : "white")};
+  transition: all 0.2s ease;
+  background-color: ${(props) => (props.$isDraggingOver ? "#e3f2fd" : "white")};
+  border: 2px dashed
+    ${(props) =>
+      props.$isDraggingOver
+        ? props.$isDraggingOverLegalItem
+          ? "#2196f3"
+          : "#ff5252"
+        : "transparent"};
+  border-radius: 4px;
+  min-height: 50px;
 
   &::before {
     content: "";
@@ -17,11 +26,12 @@ export const List = styled.div<{
     width: 100%;
     height: 100%;
     z-index: 100;
-    background-color: rgba(255, 0, 0, 0.5); /* Red overlay with opacity */
-    pointer-events: none; /* Make the overlay non-interactive */
-    display: ${({ $isDraggingOverLegalItem, $isDraggingOver }) =>
-      $isDraggingOverLegalItem || !$isDraggingOver ? "none" : "block"};
-    transition: display 0.3s ease;
+    background-color: ${(props) =>
+      !props.$isDraggingOverLegalItem && props.$isDraggingOver
+        ? "rgba(255, 82, 82, 0.1)"
+        : "transparent"};
+    pointer-events: none;
+    transition: all 0.2s ease;
   }
 `;
 
@@ -31,5 +41,5 @@ export const CollapsibleList = styled(List)<{
   max-height: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "400px")};
   padding: ${({ $isCollapsed }) => ($isCollapsed ? "0" : "initial")};
   overflow: scroll;
-  transition: max-height 0.5s ease-in-out, background-color 0.3s ease;
+  transition: max-height 0.5s ease-in-out, background-color 0.2s ease;
 `;
